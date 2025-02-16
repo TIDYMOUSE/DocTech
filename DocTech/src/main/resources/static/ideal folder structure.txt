@@ -1,0 +1,81 @@
+spring-boot-project/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── example/
+│   │   │           └── project/
+│   │   │               ├── controller/        # Controllers for handling HTTP requests
+│   │   │               │   └── ExampleController.java
+│   │   │               │
+│   │   │               ├── model/             # Models (Entities, DTOs, etc.)
+│   │   │               │   ├── User.java
+│   │   │               │   ├── Product.java
+│   │   │               │   └── Order.java
+│   │   │               │
+│   │   │               ├── repository/        # Spring Data Repositories
+│   │   │               │   ├── UserRepository.java
+│   │   │               │   └── ProductRepository.java
+│   │   │               │
+│   │   │               ├── service/           # Services (Business logic)
+│   │   │               │   ├── UserService.java
+│   │   │               │   └── OrderService.java
+│   │   │               │
+│   │   │               ├── util/              # Utility classes and helpers
+│   │   │               │   ├── CsvHelper.java
+│   │   │               │   ├── DateUtil.java
+│   │   │               │   └── EmailUtil.java
+│   │   │               │
+│   │   │               ├── exception/         # Custom exception handling
+│   │   │               │   ├── GlobalExceptionHandler.java
+│   │   │               │   └── ResourceNotFoundException.java
+│   │   │               │
+│   │   │               ├── config/            # Configuration classes
+│   │   │               │   ├── SecurityConfig.java
+│   │   │               │   └── AppConfig.java
+│   │   │               │
+│   │   │               ├── dto/               # Data Transfer Objects (DTOs)
+│   │   │               │   ├── UserDTO.java
+│   │   │               │   └── OrderDTO.java
+│   │   │               │
+│   │   │               └── Application.java   # Main Spring Boot Application class
+│   │   │
+│   │   ├── resources/
+│   │   │   ├── static/                        # Static resources like HTML, CSS, JS, images
+│   │   │   │   ├── index.html
+│   │   │   │   └── styles.css
+│   │   │   │
+│   │   │   ├── templates/                     # Thymeleaf templates
+│   │   │   │   ├── home.html
+│   │   │   │   └── login.html
+│   │   │   │
+│   │   │   ├── csv/                           # Static CSV files
+│   │   │   │   └── data.csv
+│   │   │   │
+│   │   │   ├── application.properties         # Properties for development
+│   │   │   ├── application.yml                # Optional: YML configuration
+│   │   │   └── application-test.properties    # Properties for testing
+│   │   │
+│   │   └── webapp/                            # Web application resources
+│   │       └── WEB-INF/
+│   │           ├── web.xml
+│   │           └── jsp/
+│   │               └── index.jsp
+│   │
+│   ├── test/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── example/
+│   │   │           └── project/
+│   │   │               ├── controller/
+│   │   │               ├── service/
+│   │   │               └── repository/
+│   │   │
+│   │   └── resources/
+│   │       └── application-test.properties
+│   │
+├── .gitignore
+├── mvnw
+├── mvnw.cmd
+├── pom.xml                                   # Maven configuration file
+└── README.md                                 # Project documentation
