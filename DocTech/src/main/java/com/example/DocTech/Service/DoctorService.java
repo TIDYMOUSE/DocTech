@@ -3,9 +3,6 @@ package com.example.DocTech.Service;
 import com.example.DocTech.Model.*;
 import com.example.DocTech.Repository.*;
 import com.example.DocTech.Util.CSVREADER;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DoctorService implements UserDetailsService {
+public class DoctorService  {
 
     private final DoctorRepository doctorRepository;
     private final PatientRegisterRepository patientRegisterRepository;
@@ -55,13 +52,6 @@ public class DoctorService implements UserDetailsService {
     public void readCSVColumn(String columnName) {
         csvreader.getData(columnName);
     }
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Doctor not found with email: " + email)); // Doctor implements UserDetails
-    }
-
 
     // ward
     public List<Patient_Register> getAllPatientRegister(Long id) {

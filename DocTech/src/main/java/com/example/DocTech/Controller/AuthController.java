@@ -1,40 +1,36 @@
-//package com.example.DocTech.Controller;
-//
-//
-//import com.example.DocTech.Model.Doctor;
-//import com.example.DocTech.Repository.DoctorRepository;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.HttpStatusCode;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.security.web.webauthn.api.AuthenticatorResponse;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//import java.time.LocalDate;
-//import java.util.Base64;
-//import java.util.Optional;
-//
-//@RestController
-//public class AuthController {
-//
-//    private final AuthenticationManager authenticationManager;
-//
-//    private final DoctorRepository doctorRepository;
-//
-//    private final PasswordEncoder passwordEncoder;
-//
-//    public AuthController(AuthenticationManager authenticationManager, DoctorRepository doctorRepository, PasswordEncoder passwordEncoder) {
-//        this.authenticationManager = authenticationManager;
-//        this.doctorRepository = doctorRepository;
-//        this.passwordEncoder = passwordEncoder;
-//    }
-//
+package com.example.DocTech.Controller;
+
+
+import com.example.DocTech.Model.Doctor;
+import com.example.DocTech.Model.LoginRequest;
+import com.example.DocTech.Model.LoginResponse;
+import com.example.DocTech.Repository.DoctorRepository;
+import com.example.DocTech.Service.AuthService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.webauthn.api.AuthenticatorResponse;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+import java.util.Base64;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthService authService;
+
 //    @PostMapping("/login")
 //    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
 //        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.email(), loginRequest.password());
@@ -87,4 +83,19 @@
 //            Optional<LocalDate> retirementDate,
 //            Optional<byte[]> image
 //    ) {}
-//}
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/registerDoctor")
+    public ResponseEntity<String> registerDoc(@RequestBody AuthService.DoctorRegisterRequest doctorRegisterRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerDoctor(doctorRegisterRequest));
+    }
+
+    @PostMapping("/registerPatient")
+    public ResponseEntity<String> registerPat(@RequestBody AuthService.PatientRegisterRequest patientRegisterRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerPatient(patientRegisterRequest));
+    }
+}

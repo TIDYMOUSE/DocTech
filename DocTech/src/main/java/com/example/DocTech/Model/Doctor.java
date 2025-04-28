@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Builder
-public class Doctor implements UserDetails {
+public class Doctor {
 
     public enum Specialisation {
         Cardiologist,
@@ -99,34 +99,4 @@ public class Doctor implements UserDetails {
     private List<Complaint> complaints;
 
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Assuming all doctors have the role "DOCTOR"
-        return Collections.singletonList(new SimpleGrantedAuthority("DOCTOR"));
-    }
-
-    @Override
-    public String getUsername() {
-        return email; // Use email as the username
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true; // Account never expires
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true; // Account is never locked
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true; // Credentials never expire
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true; // Account is always enabled
-    }
 }

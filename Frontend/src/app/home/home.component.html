@@ -1,0 +1,55 @@
+<div class="w-full relative">
+  <!-- navbar  -->
+  <app-navbar #navbar />
+  <!-- Hero -->
+  <div class="bg-secondary w-full flex justify-between">
+    <div class="flex flex-col w-full">
+      <div class="h-full flex flex-col justify-center text-center">
+        <h1 class="font-title text-white font-bold text-5xl">
+          Doc<span class="text-green-400">Tech</span>
+        </h1>
+        <p class="text-gray-300 font-main text-sm">
+          24/7 support of world class medical professoinals
+        </p>
+      </div>
+      <div
+        class="bg-backcol h-20 relative before:content-[''] before:absolute before:top-0 before:right-0 before:w-0 before:h-0 before:border-t-[67px] before:border-l-[50px] before:border-solid before:border-t-secondary before:border-l-transparent before:border-b-transparent before:border-r-transparent flex p-1 gap-3"
+      >
+        <a
+          routerLink="/login/doctor"
+          class="bg-action font-bold font-title p-3 text-center text-white cursor-pointer hover:bg-action/90 transition-all duration-300 rounded-md"
+        >
+          Login as Doctor
+        </a>
+        <a
+          routerLink="/login/patient"
+          class="bg-white text-action font-bold font-title border-2 border-action text-center p-3 cursor-pointer hover:bg-action hover:text-white hover:border-white transition-all duration-300"
+        >
+          Login as Patient
+        </a>
+      </div>
+    </div>
+    <img src="/doc.png" alt="" class="" />
+  </div>
+
+  <div class="mx-3 my-5 border-2">
+    <div class="w-full inline-flex flex-nowrap overflow-hidden">
+      <ul
+        class="flex items-center gap-8 justify-center md:justify-start"
+        [@scroll]="scrollState"
+        (@scroll.done)="onAnimationDone()"
+      >
+        <li *ngFor="let item of items" class="">{{ item }}</li>
+      </ul>
+
+      <!-- Duplicate list for seamless scrolling -->
+      <ul
+        class="flex items-center justify-center md:justify-start gap-8"
+        [@scroll]="scrollState2"
+        (@scroll.done)="onAnimationDone2()"
+      >
+        <li *ngFor="let item of items" class="">{{ item }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

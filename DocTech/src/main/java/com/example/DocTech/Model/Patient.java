@@ -2,10 +2,7 @@ package com.example.DocTech.Model;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Data
+@Builder
 public class Patient {
 
     public enum Gender {
@@ -85,11 +83,11 @@ public class Patient {
     private BloodGroup bloodGroup;
 
     @Column(name= "number", nullable = false)
-    private Integer number;
+    private String number;
 
     @Column(unique = true)
     private String email;
-    private Integer emergencyNumber;
+    private String emergencyNumber;
     private String address;
 
     @CreatedDate
@@ -98,6 +96,9 @@ public class Patient {
 
     @Column(unique = true)
     private String aadhar;
+
+    @Column(nullable = false)
+    private String password;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;

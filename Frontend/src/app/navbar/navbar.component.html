@@ -1,0 +1,43 @@
+<!-- C5DBE1 -->
+<nav
+  class="transition-all ease-in-out duration-300 absolute left-0 top-0 z-20"
+  [ngClass]="isExpanded() ? 'w-full  bg-primary shadow-2xl' : 'w-fit'"
+>
+  <img
+    src="/nav.svg"
+    alt="open"
+    (click)="toggleNavbar()"
+    class="cursor-pointer hover:font-bold size-6 transition-all duration-300"
+  />
+  <div
+    class="text-5xl font-bold my-3 py-3 px-2 w-full text-center transition-all duration-300"
+    [ngClass]="isExpanded() ? '' : 'hidden'"
+  >
+    Doc<span class="text-green-300">Tech</span>
+  </div>
+  <ul
+    class="list-none text-center my-3 flex flex-col gap-2 mt-3 bg-[#8ed1fc] rounded-sm shadow-2xl transition-all duration-300"
+  >
+    <li
+      routerLink="/home"
+      [ngClass]="isExpanded() ? 'visible ' : ' hidden '"
+      class="cursor-pointer hover:font-bold hover:border-b-2 border-white py-2 transition-all duration-300"
+    >
+      Home
+    </li>
+    <li
+      routerLink="/login"
+      [ngClass]="isExpanded() ? 'visible' : 'hidden'"
+      class="cursor-pointer hover:font-bold hover:border-t-2 hover:border-b-2 border-white py-2 transition-all duration-300"
+    >
+      Login
+    </li>
+    <li
+      routerLink="/dashboard"
+      [ngClass]="isExpanded() ? 'visible' : 'hidden'"
+      class="cursor-pointer hover:font-bold hover:border-t-2 border-white py-2 transition-all ease-in duration-300"
+    >
+      Dashboard
+    </li>
+  </ul>
+</nav>
