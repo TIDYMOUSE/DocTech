@@ -1,0 +1,3 @@
+/home/advait/Desktop/PROGRAMMING/projects/DocTechProject/sensor_system/build/CMakeFiles/ecg_device.dir
+/home/advait/Desktop/PROGRAMMING/projects/DocTechProject/sensor_system/build/CMakeFiles/edit_cache.dir
+/home/advait/Desktop/PROGRAMMING/projects/DocTechProject/sensor_system/build/CMakeFiles/rebuild_cache.dir

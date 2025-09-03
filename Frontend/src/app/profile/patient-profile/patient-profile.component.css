@@ -1,0 +1,104 @@
+@keyframes fade-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-fade-in-left {
+  animation: fade-in-left 0.4s ease-in-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-in-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-in-out forwards;
+}
+
+.animate-scale-x {
+  animation: scale-x 0.3s ease-in-out forwards;
+}
+
+/* Hover effects for the entire sidebar */
+.sidebar-container:hover .nav-item {
+  transform: translateY(-1px);
+}
+
+/* Smooth transitions for collapsing */
+.nav-item-content {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Icon breathing effect */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.icon-breathe {
+  animation: breathe 2s ease-in-out infinite;
+}
+
+/* Glowing effect for active items */
+.active-glow {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Stagger animation for menu items */
+.nav-item {
+  opacity: 0;
+  animation: slideInStagger 0.3s ease-out forwards;
+}
+
+@keyframes slideInStagger {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

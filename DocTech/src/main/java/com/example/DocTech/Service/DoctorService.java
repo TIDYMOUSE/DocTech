@@ -4,10 +4,9 @@ import com.example.DocTech.Model.*;
 import com.example.DocTech.Repository.*;
 import com.example.DocTech.Util.CSVREADER;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -37,17 +36,11 @@ public class DoctorService  {
         return doctorRepository.findAll();
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public Optional<Doctor> getDoctorById(Long id){
 
-        try {
-            return doctorRepository.findById(id);
-        } catch (Exception e) {
-            // Log the exception to see what caused the transaction to fail
-            System.out.println("Error fetching doctor by ID" + e.toString());
-            throw e;  // Re-throw the exception to mark the transaction for rollback
-        }
+    public Optional<Doctor> getDoctorById(Long id) {
+        return doctorRepository.findById(id);
     }
+
 
     public void readCSVColumn(String columnName) {
         csvreader.getData(columnName);
@@ -91,29 +84,37 @@ public class DoctorService  {
         return p.map(Patient::getReports).orElse(null);
     }
 
+    public Optional<Report> getReportByFollowupId(Long followup_id) {
+        return reportRepository.findByFollowup_Id(followup_id);
+    }
+
     public void createReport(Report report) {
         reportRepository.save(report);
     }
 
     // Complaints
-
     public List<Complaint> getComplaints (Long doc_id) {
         return complaintRepository.findByDoctorId(doc_id);
     }
 
-    public void addressComplaint(Long comp_id) {
-        Complaint complaint = complaintRepository.findById(comp_id).get();
-        complaint.setAddressed(true);
+    public void addressComplaint(Complaint complaint) {
+//        complaint.setAddressed(true); dont from the frontend site
+        if(complaintRepository.findById(complaint.getId()).isEmpty()) {
+            throw new NoSuchElementException();
+        }
         complaintRepository.save(complaint);
     }
 
     // followups
-
     public List<Followup> getFollowups(Long doc_id) {
         return followupRepository.findByDoctor_IdOrderByFollowupDateDesc(doc_id);
     }
 
     public void registerFollowup(Followup followup) {
+        followupRepository.save(followup);
+    }
+
+    public void addressFollowup(Followup followup) {
         followupRepository.save(followup);
     }
 

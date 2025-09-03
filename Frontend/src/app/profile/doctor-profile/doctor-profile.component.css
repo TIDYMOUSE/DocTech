@@ -1,0 +1,18 @@
+:host ::ng-deep {
+  .p-avatar {
+    background-color: #374151 !important;
+  }
+
+  .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    border-color: #0d9488;
+    color: #0d9488;
+  }
+
+  .p-button.p-button-text {
+    color: #0d9488;
+  }
+
+  .p-button.p-button-text:hover {
+    background-color: rgba(13, 148, 136, 0.1);
+  }
+}

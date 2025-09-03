@@ -1,0 +1,496 @@
+<!-- Main container -->
+<div class="min-h-screen flex bg-gray-100 relative">
+  <!-- Mobile Menu Toggle Button (visible only on mobile when menu is collapsed) -->
+  <button
+    *ngIf="isMenuCollapsed()"
+    (click)="toggleMenu()"
+    class="md:hidden fixed top-4 left-4 z-50 bg-white shadow-lg rounded-lg p-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition-all duration-200 ease-in-out"
+  >
+    <i class="pi pi-arrow-right text-lg"></i>
+  </button>
+
+  <!-- Backdrop for mobile overlay -->
+  <div
+    *ngIf="!isMenuCollapsed()"
+    class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
+    (click)="toggleMenu()"
+  ></div>
+
+  <!-- Collapsible Sidebar -->
+  <div
+    class="bg-white shadow-lg border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out z-50"
+    [ngClass]="{
+      'fixed inset-y-0 left-0 w-80 transform': true,
+      '-translate-x-full md:translate-x-0': isMenuCollapsed(),
+      'translate-x-0': !isMenuCollapsed(),
+      'md:relative md:inset-auto md:transform-none': true,
+      'md:w-20': isMenuCollapsed(),
+      'md:w-64': !isMenuCollapsed()
+    }"
+  >
+    <!-- Logo/Header Section -->
+    <div
+      class="flex p-4 border-b border-gray-200 h-[65px] items-center shrink-0"
+      [ngClass]="isMenuCollapsed() ? 'md:justify-center' : 'justify-between'"
+    >
+      @if (!isMenuCollapsed()) {
+      <div
+        class="flex items-center gap-3 transition-all duration-300 ease-in-out"
+      >
+        <div
+          class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white flex-shrink-0 transition-transform duration-200 ease-in-out hover:scale-105"
+        >
+          <i
+            class="pi pi-heart text-lg transition-transform duration-200 ease-in-out hover:scale-110"
+          ></i>
+        </div>
+        <div class="overflow-hidden">
+          <h2 class="text-lg font-bold text-gray-900 whitespace-nowrap">
+            Doc<span class="text-green-300">Tech</span>
+          </h2>
+          <p class="text-xs text-gray-500 whitespace-nowrap">Patient Portal</p>
+        </div>
+      </div>
+      }
+      <button
+        (click)="toggleMenu()"
+        class="flex items-center justify-center text-gray-600 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition-all duration-200 ease-in-out cursor-pointer p-2 hover:scale-105 active:scale-95"
+        [ngClass]="{
+          'justify-center': isMenuCollapsed(),
+          'md:block': true,
+          block: !isMenuCollapsed()
+        }"
+      >
+        <i
+          class="text-lg flex-shrink-0 transition-transform duration-300 ease-in-out"
+          [class]="isMenuCollapsed() ? 'pi pi-arrow-right' : 'pi pi-arrow-left'"
+        ></i>
+      </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="flex-1 p-2 pt-3">
+      <ul class="space-y-1">
+        <ng-container *ngFor="let item of navItems">
+          <li *ngIf="item.isSeparator">
+            <div class="my-2 border-t border-gray-200 mx-2"></div>
+          </li>
+          <li *ngIf="!item.isSeparator && item.componentKey">
+            <a
+              (click)="navigateTo(item.componentKey!)"
+              class="flex items-center gap-x-3 px-3 py-2.5 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 ease-in-out cursor-pointer group"
+              [class.bg-blue-100]="currentComponent() === item.componentKey"
+              [class.text-blue-700]="currentComponent() === item.componentKey"
+              [class.md:justify-center]="isMenuCollapsed()"
+              [pTooltip]="
+                isMenuCollapsed() ? item.tooltip || item.label : undefined
+              "
+              tooltipPosition="right"
+              [tooltipOptions]="{ showDelay: 300, hideDelay: 0, life: 1000 }"
+            >
+              <i
+                [class]="item.icon"
+                class="text-lg flex-shrink-0 transition-transform duration-200 ease-in-out"
+                [class.md:text-xl]="isMenuCollapsed()"
+                [class.group-hover:scale-110]="!isMenuCollapsed()"
+                [class.md:group-hover:scale-125]="isMenuCollapsed()"
+              ></i>
+              <span
+                class="font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis transition-all duration-200 ease-in-out group-hover:translate-x-1"
+                [class.md:hidden]="isMenuCollapsed()"
+              >
+                {{ item.label }}
+              </span>
+            </a>
+          </li>
+        </ng-container>
+      </ul>
+    </nav>
+
+    <!-- Footer -->
+    <div class="p-2 border-t border-gray-200 shrink-0">
+      <div
+        class="px-2 pt-1 pb-2 flex items-center gap-3 text-xs text-gray-500 transition-all duration-200 ease-in-out"
+        [class.md:hidden]="isMenuCollapsed()"
+      >
+        <i
+          class="pi pi-shield text-green-500 transition-transform duration-200 ease-in-out hover:scale-110"
+        ></i>
+        <span>Secure & Private</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+
+  <div
+    [ngSwitch]="currentComponent()"
+    class="overflow-auto transition-all duration-300 ease-in-out w-full"
+  >
+    <div *ngSwitchCase="'details'" class="bg-gray-50">
+      <!-- Patient Basic Info Card (Original Content) -->
+      <div class="p-3 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Patient Basic Info Card -->
+        <div class="md:col-span-2">
+          <div
+            class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+          >
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-xl font-semibold text-white">
+                    Patient Information
+                  </h2>
+                  <p class="text-blue-100 text-sm">
+                    Basic details and contact information
+                  </p>
+                </div>
+                <p-button
+                  class="text-white p-2 rounded-lg"
+                  icon="pi pi-pencil"
+                  variant="outlined"
+                ></p-button>
+              </div>
+            </div>
+            <!-- Content -->
+            @if(!patStore.isLoadingPat() && patStore.pat()){
+            <div class="p-6">
+              <!-- Name Section -->
+              <div class="mb-6">
+                <div class="flex items-center gap-3 mb-2">
+                  <div>
+                    <h3 class="text-2xl font-bold text-gray-900">
+                      {{ `${ patStore.pat()!.firstName} ${patStore.pat()!.middleName} ${patStore.pat()!.lastName}` }}
+                    </h3>
+                    @if (!patStore.isLoadingWard()) {
+                    <div class="flex gap-3 text-sm text-gray-600">
+                      <p>
+                        Bed Number:
+                        {{ patStore.patientRegister()?.bedNumber }}
+                      </p>
+                      <p>
+                        Dr.
+                        <span
+                          class="cursor-pointer font-medium text-blue-600 hover:underline"
+                        >
+                          {{
+                            patStore.patientRegister()?.doctor?.firstName +
+                              " " +
+                              patStore.patientRegister()?.doctor?.lastName
+                          }}
+                        </span>
+                      </p>
+                    </div>
+                    } @else {
+                    <div class="card">
+                      <div
+                        class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900"
+                      >
+                        <div class="flex mb-4">
+                          <p-skeleton shape="circle" size="4rem" class="mr-2" />
+                          <div>
+                            <p-skeleton width="10rem" class="mb-2" />
+                            <p-skeleton width="5rem" class="mb-2" />
+                            <p-skeleton height=".5rem" />
+                          </div>
+                        </div>
+                        <p-skeleton width="100%" height="150px" />
+                        <div class="flex justify-between mt-4">
+                          <p-skeleton width="4rem" height="2rem" />
+                          <p-skeleton width="4rem" height="2rem" />
+                        </div>
+                      </div>
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              <!-- Info Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <!-- Contact Information -->
+                <div class="space-y-4">
+                  <h4
+                    class="font-semibold text-gray-900 text-base border-b border-gray-200 pb-2"
+                  >
+                    Contact Details
+                  </h4>
+                  <div class="flex items-start gap-3">
+                    <i class="pi pi-envelope text-gray-400 mt-1"></i>
+                    <div>
+                      <p class="text-xs text-gray-500">Email</p>
+                      <p class="font-medium text-gray-800 text-sm">
+                        {{ patStore.pat()!.email }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <i class="pi pi-phone text-gray-400 mt-1"></i>
+                    <div>
+                      <p class="text-xs text-gray-500">Phone Number</p>
+                      <p class="font-medium text-gray-800 text-sm">
+                        {{ patStore.pat()!.number }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <i class="pi pi-exclamation-circle text-red-500 mt-1"></i>
+                    <div>
+                      <p class="text-xs text-gray-500">Emergency Contact</p>
+                      <p class="font-medium text-gray-800 text-sm">
+                        {{ patStore.pat()!.emergencyNumber }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <i class="pi pi-map-marker text-gray-400 mt-1"></i>
+                    <div>
+                      <p class="text-xs text-gray-500">Address</p>
+                      <p
+                        class="font-medium text-gray-800 text-sm leading-tight"
+                      >
+                        {{ patStore.pat()!.address }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Personal Information -->
+                <div class="space-y-4">
+                  <h4
+                    class="font-semibold text-gray-900 text-base border-b border-gray-200 pb-2"
+                  >
+                    Personal Information
+                  </h4>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-gray-50 p-2.5 rounded-md">
+                      <p class="text-xs text-gray-500">Gender</p>
+                      <p class="font-medium text-gray-800 text-sm">
+                        {{ patStore.pat()!.gender }}
+                      </p>
+                    </div>
+                    <div class="bg-gray-50 p-2.5 rounded-md">
+                      <p class="text-xs text-gray-500">Blood Group</p>
+                      <p class="font-medium text-red-600 text-sm">
+                        {{ patStore.pat()!.bloodGroup }}
+                      </p>
+                    </div>
+                    <div class="bg-gray-50 p-2.5 rounded-md">
+                      <p class="text-xs text-gray-500">Height</p>
+                      <p class="font-medium text-gray-800 text-sm">
+                        {{ patStore.pat()!.height }} cm
+                      </p>
+                    </div>
+                    <div class="bg-gray-50 p-2.5 rounded-md">
+                      <p class="text-xs text-gray-500">Weight</p>
+                      <p class="font-medium text-gray-800 text-sm">
+                        {{ patStore.pat()!.weight }} kg
+                      </p>
+                    </div>
+                  </div>
+                  <div class="bg-blue-50 p-2.5 rounded-md">
+                    <p class="text-xs text-blue-700">Aadhar Number</p>
+                    <p class="font-mono font-medium text-blue-900 text-sm">
+                      {{ patStore.pat()!.aadhar }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            } @else {
+            <div class="card">
+              <div
+                class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900"
+              >
+                <div class="flex mb-4">
+                  <p-skeleton shape="circle" size="4rem" class="mr-2" />
+                  <div>
+                    <p-skeleton width="10rem" class="mb-2" />
+                    <p-skeleton width="5rem" class="mb-2" />
+                    <p-skeleton height=".5rem" />
+                  </div>
+                </div>
+                <p-skeleton width="100%" height="150px" />
+                <div class="flex justify-between mt-4">
+                  <p-skeleton width="4rem" height="2rem" />
+                  <p-skeleton width="4rem" height="2rem" />
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Right Sidebar (Original Content) -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div
+            class="bg-gradient-to-r rounded-t-xl from-green-600 to-green-700 px-4 py-3"
+          >
+            <h3
+              class="text-base font-semibold text-white flex items-center gap-2"
+            >
+              <i class="pi pi-clock"></i> Recent Activity
+            </h3>
+          </div>
+
+          <div
+            class="overflow-y-auto max-h-96 p-3 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+          >
+            @for (item of activityItem(); track $index) {
+            <div
+              class="border-l-4 pl-3 py-1.5 mb-3 last:mb-0"
+              [ngClass]="
+                item.type == 'remark' ? 'border-orange-400' : 'border-blue-400'
+              "
+            >
+              <div class="flex items-start justify-between">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-800 text-sm truncate">
+                    {{ item.title }}
+                  </p>
+                  <p class="text-xs text-gray-600 mt-0.5">
+                    {{ item.subtitle }}
+                  </p>
+                  <p class="text-xs text-gray-400 mt-1.5">
+                    {{ item.timeAgo }}
+                  </p>
+                </div>
+                <div class="ml-2 flex-shrink-0">
+                  <p-tag [value]="item.tag" [severity]="item.severity" />
+                </div>
+              </div>
+              <div class="mt-2.5">
+                @if (item.type == 'remark' || (item.type == 'followup' &&
+                item.severity === 'success')) {
+                <p-button
+                  [label]="
+                    item.type === 'remark' ? 'View Graph' : 'View Report'
+                  "
+                  [icon]="
+                    item.type === 'remark'
+                      ? 'pi pi-chart-line'
+                      : 'pi pi-file-pdf'
+                  "
+                  [outlined]="true"
+                  severity="info"
+                  size="small"
+                  styleClass="w-full text-xs"
+                ></p-button>
+                }
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Recent Stats Card (Original Content) -->
+        <div
+          class="md:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+        >
+          <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-3">
+            <h3
+              class="text-base font-semibold text-white flex items-center gap-2"
+            >
+              <i class="pi pi-chart-bar"></i> Recent Vitals
+            </h3>
+          </div>
+          <div class="p-4">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="bg-red-50 p-3 rounded-lg text-center">
+                <i class="pi pi-heart text-red-500 text-xl mb-1"></i>
+                <p class="text-xs text-gray-600">Heart Rate</p>
+                <p class="font-bold text-red-600 text-sm">72 BPM</p>
+              </div>
+              <div class="bg-blue-50 p-3 rounded-lg text-center">
+                <i class="pi pi-circle text-blue-500 text-xl mb-1"></i>
+                <p class="text-xs text-gray-600">Blood Pressure</p>
+                <p class="font-bold text-blue-600 text-sm">120/80</p>
+              </div>
+              <div class="bg-green-50 p-3 rounded-lg text-center">
+                <i class="pi pi-sun text-green-500 text-xl mb-1"></i>
+                <p class="text-xs text-gray-600">Temperature</p>
+                <p class="font-bold text-green-600 text-sm">98.6°F</p>
+              </div>
+              <div class="bg-cyan-50 p-3 rounded-lg text-center">
+                <i class="pi pi-cloud text-cyan-500 text-xl mb-1"></i>
+                <p class="text-xs text-gray-600">Oxygen Sat</p>
+                <p class="font-bold text-cyan-600 text-sm">98%</p>
+              </div>
+            </div>
+            <div class="mt-4 space-y-2">
+              <div
+                class="flex justify-between items-center py-1.5 border-b border-gray-100 text-sm"
+              >
+                <span class="text-gray-600">Respiratory Rate</span
+                ><span class="font-medium text-gray-800">16/min</span>
+              </div>
+              <div
+                class="flex justify-between items-center py-1.5 border-b border-gray-100 text-sm"
+              >
+                <span class="text-gray-600">Activity Level</span>
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                  >Moderate</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center py-1.5 border-b border-gray-100 text-sm"
+              >
+                <span class="text-gray-600">Stress Level</span>
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
+                  >Low</span
+                >
+              </div>
+              <div class="flex justify-between items-center py-1.5 text-sm">
+                <span class="text-gray-600">Sleep Duration</span
+                ><span class="font-medium text-gray-800">7.5 hrs</span>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-gray-200">
+              <p-button
+                label="Configure Alerts"
+                icon="pi pi-bell"
+                [outlined]="true"
+                severity="secondary"
+                size="small"
+                styleClass="w-full text-xs"
+              ></p-button>
+              <p class="text-xs text-gray-500 mt-1.5 text-center">
+                Set alerts based on age-appropriate averages
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other Components -->
+    <div *ngSwitchCase="'complains'">
+      <app-complaint />
+    </div>
+    <div *ngSwitchCase="'followups'">
+      <app-followup />
+    </div>
+    <div *ngSwitchCase="'reports'">
+      <app-report />
+    </div>
+    <div *ngSwitchCase="'doctor'">
+      <app-doctor-view />
+    </div>
+    <div *ngSwitchCase="'ward'">
+      <app-ward-view />
+    </div>
+    <div *ngSwitchCase="'monitor'">
+      <app-monitor />
+    </div>
+
+    <div *ngSwitchDefault class="p-6 flex items-center justify-center h-full">
+      <div class="text-center">
+        <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
+        <p class="text-gray-500">
+          Select an option from the menu to view details.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

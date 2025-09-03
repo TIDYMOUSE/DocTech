@@ -17,16 +17,16 @@ public class JwtService {
     private static final String SECRET_KEY = "theoathhasbeentakentheyshallnothaveyou";
     private static final Key SIGNING_KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
-    public String generateToken(String email, String role) {
+    public String generateToken(String email, Long id, String role) {
         Map<String, Object> claims = new HashMap<>();
-
         claims.put("role", role);
+        claims.put("id", id);
 
         return Jwts.builder()
                 .claims(claims)
                 .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 hours
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(SIGNING_KEY)
                 .compact();
     }
@@ -35,22 +35,25 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public boolean validateToken(String token, String username) {
-        return username.equals(extractEmail(token)) && isTokenExpired(token);
-    }
-
     public String extractRole(String token) {
         Claims claims = extractAllClaims(token);
         return claims.get("role", String.class);
+    }
 
+    public Long extractId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("id", Long.class);
+    }
+    public boolean validateToken(String token, String username) {
+        return username.equals(extractEmail(token)) && !isTokenExpired(token);
     }
 
     public boolean isTokenValid(String token) {
-        return isTokenExpired(token);
+        return !isTokenExpired(token); // ✅ Fixed
     }
 
     private boolean isTokenExpired(String token) {
-        return !extractExpiration(token).before(new Date());
+        return extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) {

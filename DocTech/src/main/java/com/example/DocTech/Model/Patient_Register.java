@@ -1,5 +1,6 @@
 package com.example.DocTech.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Patient_Register {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,14 +42,18 @@ public class Patient_Register {
     private String bedNumber;
 
     @OneToMany(mappedBy = "register", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Report> reports;
 
     @OneToMany(mappedBy = "register", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Followup>  followups;
 
     @OneToMany(mappedBy = "register", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Remark>  remarks;
 
     @OneToMany(mappedBy = "patientRegister", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Complaint> complaints;
 }

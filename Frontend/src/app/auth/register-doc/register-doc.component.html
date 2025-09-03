@@ -1,1 +1,357 @@
-<p>register-doc works!</p>
+<p-toast />
+<div
+  class="min-h-screen flex items-center justify-center bg-[url('/doc-reg-bg.jpeg')] bg-center bg-cover p-4 sm:p-6 lg:p-8"
+>
+  <div class="w-full max-w-4xl">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl sm:text-4xl font-main font-bold text-gray-900 mb-2">
+        Doctor Registration
+      </h1>
+      <p class="text-gray-600">Create your professional account</p>
+    </div>
+
+    <!-- Form Container -->
+    <div
+      class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+    >
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+        <h2 class="text-white font-semibold text-xl">Registration Form</h2>
+      </div>
+
+      <form
+        #RegisterDoc="ngForm"
+        (ngSubmit)="onSubmit(RegisterDoc)"
+        class="p-6 sm:p-8 lg:p-12"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Image Upload -->
+          <div class="md:col-span-2 space-y-2">
+            <label class="block text-sm font-medium text-gray-700 mb-3"
+              >Profile Picture</label
+            >
+            <div
+              class="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-y-0 sm:space-x-6"
+            >
+              <div
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center flex-shrink-0"
+              >
+                <img
+                  *ngIf="imagePreview"
+                  [src]="imagePreview"
+                  alt="Preview"
+                  class="w-full h-full object-cover"
+                />
+                <i
+                  *ngIf="!imagePreview"
+                  class="pi pi-camera text-gray-400 text-xl"
+                ></i>
+              </div>
+              <p-fileupload
+                mode="basic"
+                chooseLabel="Choose Image"
+                chooseIcon="pi pi-upload"
+                accept="image/*"
+                maxFileSize="5000000"
+                (onSelect)="uploadImage($event)"
+                [auto]="false"
+                [showUploadButton]="false"
+                [showCancelButton]="false"
+                class="w-full flex justify-start"
+              />
+            </div>
+          </div>
+
+          <!-- First Name -->
+          <div class="w-full space-y-2">
+            <p-input-group class="w-full">
+              <p-inputgroup-addon class="bg-gray-50">
+                <i class="pi pi-user text-gray-500"></i>
+              </p-inputgroup-addon>
+              <p-floatLabel class="w-full">
+                <input
+                  pInputText
+                  name="firstName"
+                  [(ngModel)]="DoctorRegister.firstName"
+                  class="w-full"
+                  required
+                  maxlength="30"
+                  #firstName="ngModel"
+                />
+                <label for="firstName" class="text-gray-600">First Name</label>
+              </p-floatLabel>
+            </p-input-group>
+            <p-message
+              *ngIf="
+                (formSubmitted() || firstName.touched) &&
+                firstName.invalid &&
+                firstName.hasError('required')
+              "
+              severity="error"
+              text="First name is required"
+              [closable]="true"
+              icon="pi pi-ban"
+              [life]="1000"
+              size="small"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Last Name -->
+          <div class="w-full space-y-2">
+            <p-input-group class="w-full">
+              <p-inputgroup-addon class="bg-gray-50">
+                <i class="pi pi-user text-gray-500"></i>
+              </p-inputgroup-addon>
+              <p-floatLabel class="w-full">
+                <input
+                  pInputText
+                  maxlength="30"
+                  required
+                  name="lastName"
+                  [(ngModel)]="DoctorRegister.lastName"
+                  class="w-full"
+                  #lastName="ngModel"
+                />
+                <label for="lastName" class="text-gray-600">Last Name</label>
+              </p-floatLabel>
+            </p-input-group>
+            <p-message
+              *ngIf="
+                (formSubmitted() || lastName.touched) &&
+                lastName.invalid &&
+                lastName.hasError('required')
+              "
+              severity="error"
+              text="Last name is required"
+              [closable]="true"
+              icon="pi pi-ban"
+              size="small"
+              [life]="1000"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="w-full space-y-2">
+            <p-input-group class="w-full">
+              <p-inputgroup-addon class="bg-gray-50">
+                <i class="pi pi-phone text-gray-500"></i>
+              </p-inputgroup-addon>
+              <p-floatLabel class="w-full">
+                <p-input-mask
+                  name="number"
+                  [(ngModel)]="DoctorRegister.phoneNumber"
+                  mask="99999 99999"
+                  required
+                  class="w-full flex"
+                  #number="ngModel"
+                />
+                <label for="number" class="text-gray-600">Mobile Number</label>
+              </p-floatLabel>
+            </p-input-group>
+            <p-message
+              *ngIf="
+                (formSubmitted() || number.touched) &&
+                number.invalid &&
+                number.hasError('required')
+              "
+              severity="error"
+              text="Mobile number is required"
+              [closable]="true"
+              [life]="1000"
+              icon="pi pi-ban"
+              size="small"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Email -->
+          <div class="w-full space-y-2">
+            <p-input-group class="w-full">
+              <p-inputgroup-addon class="bg-gray-50">
+                <i class="pi pi-envelope text-gray-500"></i>
+              </p-inputgroup-addon>
+              <p-floatLabel class="w-full">
+                <input
+                  pInputText
+                  name="email"
+                  [(ngModel)]="DoctorRegister.email"
+                  email
+                  required
+                  #email="ngModel"
+                  class="w-full"
+                />
+                <label for="email" class="text-gray-600">Email</label>
+              </p-floatLabel>
+            </p-input-group>
+            <p-message
+              *ngIf="
+                (formSubmitted() || email.touched) &&
+                email.invalid &&
+                email.hasError('required')
+              "
+              severity="error"
+              text="Email is required"
+              [closable]="true"
+              icon="pi pi-ban"
+              size="small"
+              variant="outlined"
+            ></p-message>
+            <p-message
+              *ngIf="
+                (formSubmitted() || email.touched) &&
+                email.invalid &&
+                email.hasError('email')
+              "
+              severity="error"
+              text="Enter a valid email"
+              [closable]="true"
+              icon="pi pi-ban"
+              [life]="3000"
+              size="small"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Password -->
+          <div class="md:col-span-2 space-y-2">
+            <p-floatLabel class="w-full">
+              <p-password
+                name="password"
+                [(ngModel)]="DoctorRegister.password"
+                minlength="6"
+                fluid
+                required
+                toggleMask="true"
+                class="w-full"
+              />
+              <label for="password" class="text-gray-600">Password</label>
+            </p-floatLabel>
+          </div>
+
+          <!-- Gender -->
+          <div class="w-full space-y-2">
+            <p-floatlabel class="w-full">
+              <p-select
+                inputId="gender"
+                name="gender"
+                [options]="genderOptions"
+                optionLabel="label"
+                optionValue="value"
+                [(ngModel)]="DoctorRegister.gender"
+                fluid
+                required
+                class="w-full"
+                #gender="ngModel"
+              />
+              <label for="gender" class="text-gray-600">Gender</label>
+            </p-floatlabel>
+            <p-message
+              *ngIf="
+                (formSubmitted() || gender.touched) &&
+                gender.invalid &&
+                gender.hasError('required')
+              "
+              severity="error"
+              text="Gender is required"
+              [closable]="true"
+              icon="pi pi-ban"
+              size="small"
+              [life]="3000"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Specialisation -->
+          <div class="w-full space-y-2">
+            <p-floatlabel class="w-full">
+              <p-select
+                inputId="specialisation"
+                name="specialisation"
+                [options]="specialisationOptions"
+                optionLabel="label"
+                optionValue="value"
+                [(ngModel)]="DoctorRegister.specialisation"
+                fluid
+                required
+                #specialisation="ngModel"
+                class="w-full"
+              />
+              <label for="specialisation" class="text-gray-600"
+                >Specialisation</label
+              >
+            </p-floatlabel>
+            <p-message
+              *ngIf="
+                (formSubmitted() || specialisation.touched) &&
+                specialisation.invalid &&
+                specialisation.hasError('required')
+              "
+              severity="error"
+              text="Specialisation is required"
+              [closable]="true"
+              icon="pi pi-ban"
+              [life]="3000"
+              size="small"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Join Date -->
+          <div class="w-full space-y-2">
+            <p-date-picker
+              [(ngModel)]="joinDateWrapper"
+              (ngModelChange)="onDateChange($event, 's')"
+              dateFormat="yy-mm-dd"
+              name="joinDate"
+              showIcon="true"
+              fluid
+              required
+              #joinDate="ngModel"
+              placeholder="Join Date"
+              class="w-full"
+            />
+            <p-message
+              *ngIf="
+                (formSubmitted() || joinDate.touched) &&
+                joinDate.invalid &&
+                joinDate.hasError('required')
+              "
+              severity="error"
+              text="Join date is required"
+              [life]="3000"
+              [closable]="true"
+              icon="pi pi-ban"
+              size="small"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Retirement Date -->
+          <div class="w-full">
+            <p-date-picker
+              [(ngModel)]="retirementDateWrapper"
+              (ngModelChange)="onDateChange($event, 'r')"
+              dateFormat="yy-mm-dd"
+              showIcon="true"
+              fluid
+              name="retirementDate"
+              placeholder="Retirement Date"
+              class="w-full"
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="md:col-span-2 flex justify-center sm:justify-end mt-6">
+            <p-button
+              type="submit"
+              label="Submit"
+              styleClass="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-0 font-semibold text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,348 @@
+<div class="p-3">
+  <p-toast></p-toast>
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">My Medical Reports</h1>
+  </div>
+
+  <!-- List View -->
+  <div *ngIf="currentView === 'list'" class="space-y-4">
+    <!-- Action Bar -->
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-semibold text-gray-700">Report History</h2>
+      <div class="text-sm text-gray-600">
+        Total Reports: {{ patStore.reports().length }}
+      </div>
+    </div>
+
+    <!-- Reports List -->
+    @if(!patStore.isLoadingRep()){
+    <div
+      *ngIf="this.patStore.reports().length > 0; else noReports"
+      class="flex flex-col gap-3"
+    >
+      <p-card
+        *ngFor="let report of this.patStore.reports(); trackBy: trackByReportId"
+      >
+        <ng-template #title
+          ><div class="flex justify-between">
+            <h3 class="text-lg font-semibold text-gray-800">
+              {{ report.diagnosis }}
+            </h3>
+            <p-tag
+              [value]="
+                report.followupRequired ? 'Follow-up Required' : 'Complete'
+              "
+              [severity]="report.followupRequired ? 'warn' : 'success'"
+              styleClass="w-fit"
+            >
+            </p-tag>
+          </div>
+        </ng-template>
+        <ng-template #subtitle
+          ><p class="text-sm text-gray-600 mt-1">
+            By: Dr. {{ getDoctorName(report.doctor.id) }} -
+            {{ report.doctor.specialisation }}
+          </p></ng-template
+        >
+
+        <div *ngIf="report.remarks" class="">
+          <p class="text-gray-600 leading-relaxed text-wrap">
+            {{
+              report.remarks.length > 150
+                ? (report.remarks | slice : 0 : 150) + "..."
+                : report.remarks
+            }}
+          </p>
+        </div>
+
+        <ng-template #footer>
+          <p-divider></p-divider>
+          <div
+            class="flex md:items-center md:justify-between text-sm text-gray-500"
+          >
+            <span
+              >Room: {{ report.register.roomNo }} | Bed:
+              {{ report.register.bedNumber }} | Date:
+              {{ formatDate(report.date || "") }}</span
+            >
+            <p-button
+              label="Inspect Report"
+              icon="pi pi-eye"
+              size="small"
+              styleClass=""
+              class="self-start"
+              severity="danger"
+              variant="outlined"
+              (onClick)="inspectReport(report)"
+            >
+            </p-button>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+
+    <ng-template #noReports>
+      <p-card class="text-center py-8">
+        <div class="flex flex-col items-center space-y-4">
+          <i class="pi pi-file-o text-4xl text-gray-400"></i>
+          <h3 class="text-lg font-medium text-gray-600">No Reports Found</h3>
+          <p class="text-gray-500">You don't have any medical reports yet.</p>
+        </div>
+      </p-card>
+    </ng-template>
+    }
+  </div>
+
+  <!-- Detail View -->
+  <div *ngIf="currentView === 'detail' && selectedReport" class="space-y-6">
+    <!-- Detail Header -->
+    <div class="flex justify-between items-center">
+      <p-button
+        label="Back to Reports"
+        icon="pi pi-arrow-left"
+        severity="secondary"
+        (onClick)="switchToList()"
+      >
+      </p-button>
+    </div>
+
+    <!-- Report Detail Card -->
+    <p-card class="shadow-lg">
+      <ng-template #title
+        ><h3 class="text-2xl font-bold text-gray-800">
+          Medical Report -
+          {{
+            selectedReport()?.patient?.firstName +
+              " " +
+              selectedReport()?.patient?.lastName
+          }}
+        </h3></ng-template
+      >
+      <ng-template #subtitle
+        ><p class="text-gray-600 font-semibold mt-2">
+          Date:
+          {{ formatDate(selectedReport()?.date || "") }}
+        </p></ng-template
+      >
+
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Patient & Doctor Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 col-span-2 gap-6">
+          <p-panel header="Patient Details" class="h-fit">
+            <div class="space-y-3">
+              <div>
+                <span class="font-medium text-gray-700">Name:</span>
+                <span class="ml-2 text-gray-600"
+                  >{{ selectedReport()?.patient?.firstName }}
+                  {{ selectedReport()?.patient?.lastName }}</span
+                >
+              </div>
+              <div>
+                <span class="font-medium text-gray-700">Gender:</span>
+                <span class="ml-2 text-gray-600">{{
+                  selectedReport()?.patient?.gender
+                }}</span>
+              </div>
+              <div>
+                <span class="font-medium text-gray-700">Age:</span>
+                <span class="ml-2 text-gray-600"
+                  >{{
+                    calculateAge((selectedReport()?.patient)!.dob)
+                  }}
+                  years</span
+                >
+              </div>
+              <div>
+                <span class="font-medium text-gray-700">Blood Group:</span>
+                <span class="ml-2 text-gray-600">{{ getBloodGroup() }}</span>
+              </div>
+            </div>
+          </p-panel>
+
+          <p-panel header="Doctor Details" class="h-fit">
+            <div class="space-y-3">
+              <div>
+                <span class="font-medium text-gray-700">Name:</span>
+                <span class="ml-2 text-gray-600"
+                  >Dr. {{ selectedReport()?.doctor?.firstName }}
+                  {{ selectedReport()?.doctor?.lastName }}</span
+                >
+              </div>
+              <div>
+                <span class="font-medium text-gray-700">Specialization:</span>
+                <span class="ml-2 text-gray-600">{{
+                  selectedReport()?.doctor?.specialisation
+                }}</span>
+              </div>
+              <div>
+                <span class="font-medium text-gray-700">License:</span>
+                <span class="ml-2 text-gray-600">{{
+                  selectedReport()?.doctor?.licenseNumber || "Not specified"
+                }}</span>
+              </div>
+              <div>
+                <span class="font-medium text-gray-700">Contact:</span>
+                <span class="ml-2 text-gray-600">{{
+                  selectedReport()?.doctor?.phoneNumber
+                }}</span>
+              </div>
+            </div>
+          </p-panel>
+        </div>
+
+        <!-- Hospital Information -->
+        <p-panel header="Hospital Stay Details" class="md:col-span-2">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="">
+              <span class="font-medium text-gray-700">Room Number:</span>
+              <span class="ml-2 text-5xl-gray-600">{{
+                selectedReport()?.register?.roomNo
+              }}</span>
+            </div>
+            <div>
+              <span class="font-medium text-gray-700">Bed Number:</span>
+              <span class="ml-2 text-gray-600">{{
+                selectedReport()?.register?.bedNumber
+              }}</span>
+            </div>
+            <div>
+              <span class="font-medium text-gray-700">Admission Status:</span>
+              <p-tag
+                [value]="
+                  selectedReport()?.register?.admitted
+                    ? 'Currently Admitted'
+                    : 'Discharged'
+                "
+                rounded
+                [severity]="
+                  selectedReport()?.register?.admitted ? 'danger' : 'success'
+                "
+                styleClass="ml-2"
+                [class]="
+                  selectedReport()?.register?.admitted
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-green-100 text-green-800'
+                "
+              ></p-tag>
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-1 gap-4 mt-4"
+            *ngIf="selectedReport()?.register?.admissionDate"
+          >
+            <div>
+              <span class="font-medium text-gray-700">Admission Date:</span>
+              <span class="ml-2 text-gray-600">{{
+                formatDate((selectedReport()?.register)!.admissionDate!)
+              }}</span>
+            </div>
+            <div
+              *ngIf="selectedReport()?.register?.dischargeDate"
+              class="col-span-1"
+            >
+              <span class="font-medium text-gray-700">Discharge Date:</span>
+              <span class="ml-2 text-gray-600">{{
+                formatDate((selectedReport()?.register)!.dischargeDate!)
+              }}</span>
+            </div>
+          </div>
+        </p-panel>
+
+        <!-- Medical Details -->
+        <div class="col-span-2 flex flex-col gap-3">
+          <!-- Diagnosis -->
+          <p-panel header="Diagnosis">
+            <p class="text-gray-700 leading-relaxed">
+              {{ selectedReport()?.diagnosis }}
+            </p>
+          </p-panel>
+
+          <!-- Tests Conducted -->
+          <p-panel header="Tests Conducted" *ngIf="selectedReport()?.tests">
+            <p class="text-gray-700 leading-relaxed">
+              {{ selectedReport()?.tests }}
+            </p>
+          </p-panel>
+
+          <!-- Medication -->
+          <p-panel
+            header="Prescribed Medication"
+            *ngIf="selectedReport()?.medication"
+          >
+            <p class="text-gray-700 leading-relaxed">
+              {{ selectedReport()?.medication }}
+            </p>
+          </p-panel>
+
+          <!-- Doctor's Remarks -->
+          <p-panel header="Doctor's Remarks" *ngIf="selectedReport()?.remarks">
+            <p class="text-gray-700 leading-relaxed">
+              {{ selectedReport()?.remarks }}
+            </p>
+          </p-panel>
+        </div>
+
+        <!-- Follow-up Information -->
+        <p-panel
+          header="Follow-up Details"
+          *ngIf="selectedReport()?.followupRequired"
+          class="col-span-2"
+        >
+          <div class="space-y-3">
+            <div>
+              <span class="font-medium text-gray-700">Follow-up Required:</span>
+              <p-tag
+                value="Yes"
+                class="ml-2 bg-orange-100 text-orange-800"
+              ></p-tag>
+            </div>
+            <div *ngIf="getFollowup()">
+              <span class="font-medium text-gray-700">Scheduled Date:</span>
+              <span class="ml-2 text-gray-600">{{
+                formatDate(getFollowup()!.followupDate!)
+              }}</span>
+            </div>
+            <div *ngIf="getFollowup()">
+              <span class="font-medium text-gray-700">Status:</span>
+              <p-tag
+                [value]="getFollowup()?.status"
+                [severity]="
+                  getFollowup()?.status === 'Acheived' ? 'success' : 'warn'
+                "
+                styleClass="ml-2"
+              ></p-tag>
+            </div>
+          </div>
+        </p-panel>
+
+        <!-- Action Buttons -->
+        <p-divider class="col-span-2"></p-divider>
+
+        <div class="flex justify-end space-x-3 col-span-2">
+          <p-button
+            label="Print Report"
+            icon="pi pi-print"
+            severity="secondary"
+            (onClick)="printReport()"
+          >
+          </p-button>
+          <p-button
+            label="Download PDF"
+            icon="pi pi-download"
+            severity="secondary"
+            (onClick)="downloadReport()"
+          >
+          </p-button>
+          <p-button
+            label="Share Report"
+            icon="pi pi-share-alt"
+            (onClick)="shareReport()"
+          >
+          </p-button>
+        </div>
+      </div>
+    </p-card>
+  </div>
+</div>

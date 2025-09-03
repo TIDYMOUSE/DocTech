@@ -1,0 +1,25 @@
+:host ::ng-deep {
+  .p-button.p-button-outlined {
+    border-width: 1px;
+  }
+
+  .p-button.p-button-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .p-tag {
+    font-weight: 500;
+  }
+
+  .p-dataview .p-dataview-content {
+    padding: 0;
+  }
+
+  .p-button .p-badge {
+    min-width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+    font-size: 0.75rem;
+  }
+}

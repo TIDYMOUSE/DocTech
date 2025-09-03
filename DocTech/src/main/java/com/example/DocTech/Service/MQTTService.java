@@ -22,7 +22,6 @@ public class MQTTService  {
     public MQTTService(MqttPahoMessageDrivenChannelAdapter messageDrivenChannelAdapter) {
 //        this.mqttOutputChannel = mqttOutputChannel;
         this.inboundAdapter = messageDrivenChannelAdapter;
-
     }
 
     public void startListening() {

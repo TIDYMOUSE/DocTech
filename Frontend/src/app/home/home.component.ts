@@ -16,7 +16,6 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, NavbarComponent, RouterLink],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css',
   animations: [
     trigger('scroll', [
       state('start', style({ transform: 'translateX(0%)' })),

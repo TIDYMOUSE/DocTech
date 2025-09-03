@@ -1,0 +1,236 @@
+<div class="border border-slate-200 rounded-lg p-4">
+  <p-dataview #dv [value]="docStore.patientRegister()">
+    <ng-template #list let-items>
+      <div class="grid grid-cols-12 gap-4 grid-nogutter">
+        <div class="col-span-12" *ngFor="let register of items">
+          <div
+            class="flex flex-col p-6 gap-4 border border-surface-200 dark:border-surface-700 rounded-lg mb-4"
+            [ngClass]="{
+              'bg-slate-50 border-blue-200 ': register.admitted
+            }"
+          >
+            <!-- Patient Header -->
+            <div
+              class="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+              <div class="flex items-center gap-4">
+                <!-- Patient Info -->
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-1">
+                    <h3
+                      class="text-xl font-semibold text-surface-900 dark:text-surface-0"
+                    >
+                      {{ getPatientFullName(register.patient) }}
+                    </h3>
+                    <p-tag
+                      [value]="register.admitted ? 'Admitted' : 'Discharged'"
+                      [severity]="register.admitted ? 'success' : 'info'"
+                      class="text-xs"
+                    ></p-tag>
+                  </div>
+                  <div
+                    class="flex flex-wrap gap-4 text-xs mt-2 text-surface-600 dark:text-surface-400"
+                  >
+                    <span class="flex items-center gap-1">
+                      <i
+                        [class]="
+                          'pi ' +
+                          (register.patient.gender === 'Male'
+                            ? 'pi-mars'
+                            : 'pi-venus') +
+                          ' text-xs'
+                        "
+                      ></i>
+                      {{ register.patient.gender }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <i class="pi pi-circle-on text-xs"></i>
+                      {{ register.patient.weight }} kg
+                    </span>
+                    <span
+                      *ngIf="register.patient.bloodGroup"
+                      class="flex items-center gap-1"
+                    >
+                      <i class="pi pi-globe text-xs"></i>
+                      {{ register.patient.bloodGroup }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <i class="pi pi-calendar text-xs"></i>
+                      Age: {{ calculateAge(register.patient.dob) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Room and Bed Info -->
+              <div
+                *ngIf="register.admitted"
+                class="bg-surface-100 dark:bg-surface-700 p-3 rounded-lg"
+              >
+                <div class="flex flex-col gap-1 text-center">
+                  <span class="text-xs text-surface-600 dark:text-surface-400"
+                    >Room/Bed</span
+                  >
+                  <span class="font-bold text-surface-900 dark:text-surface-0">
+                    {{ register.roomNo
+                    }}<span *ngIf="register.bedNumber"
+                      >/{{ register.bedNumber }}</span
+                    >
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Admission Details -->
+            <div class="bg-surface-50 dark:bg-surface-800 p-4 rounded-lg">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div
+                  *ngIf="register.admissionDate"
+                  class="flex justify-between"
+                >
+                  <span class="text-surface-600 dark:text-surface-400"
+                    >Admission Date:</span
+                  >
+                  <span
+                    class="font-medium text-surface-900 dark:text-surface-0"
+                  >
+                    {{ formatDate(register.admissionDate) }}
+                  </span>
+                </div>
+                <div
+                  *ngIf="register.dischargeDate"
+                  class="flex justify-between"
+                >
+                  <span class="text-surface-600 dark:text-surface-400"
+                    >Discharge Date:</span
+                  >
+                  <span
+                    class="font-medium text-surface-900 dark:text-surface-0"
+                  >
+                    {{ formatDate(register.dischargeDate) }}
+                  </span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-surface-600 dark:text-surface-400"
+                    >Patient ID:</span
+                  >
+                  <span class="font-medium text-surface-900 dark:text-surface-0"
+                    >#{{ register.patient.id }}</span
+                  >
+                </div>
+
+                <div
+                  *ngIf="register.reports?.length"
+                  class="flex justify-between"
+                >
+                  <span class="text-surface-600 dark:text-surface-400"
+                    >Last Report Date:</span
+                  >
+                  <span
+                    class="font-medium text-surface-900 dark:text-surface-0"
+                  >
+                    {{ formatDate(getLastReportDate(register)) }}
+                  </span>
+                </div>
+                <div
+                  *ngIf="register.followups?.length"
+                  class="flex justify-between"
+                >
+                  <span class="text-surface-600 dark:text-surface-400"
+                    >Last Follow-up:</span
+                  >
+                  <span
+                    class="font-medium text-surface-900 dark:text-surface-0"
+                  >
+                    {{ formatDate(getLastFollowupDate(register)) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div
+              class="flex flex-wrap gap-2 pt-4 border-t border-surface-200 dark:border-surface-700"
+            >
+              <p-button
+                icon="pi pi-file-check"
+                label="Reports & Remarks"
+                size="small"
+                severity="secondary"
+                [outlined]="true"
+                [badge]="
+                  (register.reports?.length || 0) +
+                  (register.remarks?.length || 0)
+                "
+                badgeClass="p-badge-info"
+                (onClick)="viewReportsAndRemarks(register)"
+              ></p-button>
+
+              <p-button
+                icon="pi pi-calendar-plus"
+                label="Follow-ups"
+                size="small"
+                severity="info"
+                [outlined]="true"
+                [badge]="getPendingFollowupsCount(register).toString()"
+                badgeClass="p-badge-warning"
+                (onClick)="manageFollowups(register)"
+              ></p-button>
+
+              <p-button
+                icon="pi pi-exclamation-triangle"
+                label="Complaints"
+                size="small"
+                [severity]="
+                  getUnaddressedComplaintsCount(register) > 0
+                    ? 'danger'
+                    : 'warn'
+                "
+                [outlined]="true"
+                [badge]="getUnaddressedComplaintsCount(register).toString()"
+                badgeClass="p-badge-danger"
+                (onClick)="viewComplaints(register)"
+              ></p-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-dataview>
+
+  <!-- Empty State -->
+  @if(docStore.isLoadingFol() || docStore.isLoadingRep() ||
+  docStore.isLoadingWard() || docStore.isLoadingComp()){
+  <div class="card">
+    <div
+      class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900"
+    >
+      <div class="flex mb-4">
+        <p-skeleton shape="circle" size="4rem" class="mr-2" />
+        <div>
+          <p-skeleton width="10rem" class="mb-2" />
+          <p-skeleton width="5rem" class="mb-2" />
+          <p-skeleton height=".5rem" />
+        </div>
+      </div>
+      <p-skeleton width="100%" height="150px" />
+      <div class="flex justify-between mt-4">
+        <p-skeleton width="4rem" height="2rem" />
+        <p-skeleton width="4rem" height="2rem" />
+      </div>
+    </div>
+  </div>
+  } @else if (docStore.patientRegister().length === 0) {
+  <div class="text-center py-12">
+    <i class="pi pi-users text-4xl text-surface-400 mb-4"></i>
+    <h3
+      class="text-xl font-semibold text-surface-600 dark:text-surface-400 mb-2"
+    >
+      No Patient Registrations Found
+    </h3>
+    <p class="text-surface-500 dark:text-surface-500">
+      Register patients to start managing their records
+    </p>
+  </div>
+  }
+</div>

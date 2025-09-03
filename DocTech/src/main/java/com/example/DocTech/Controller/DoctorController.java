@@ -36,12 +36,14 @@ public class DoctorController {
         doctorService.readCSVColumn(columnName);
     }
 
-
     // ACTUAL
     @GetMapping("/profile/{id}")
-    public Optional<Doctor> getDoctorInfo(@PathVariable Long id) {
-        return doctorService.getDoctorById(id);
+    public ResponseEntity<Doctor> getDoctorInfo(@PathVariable Long id) {
+        return doctorService.getDoctorById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
 
     @PutMapping("/profile/{id}")
     public ResponseEntity<String> updateProfile(@RequestBody Doctor doctor) {
@@ -55,8 +57,6 @@ public class DoctorController {
             updatedDoc.setLastName(doctor.getLastName());
             updatedDoc.setJoinDate(doctor.getJoinDate());
             updatedDoc.setLicenseNumber(doctor.getLicenseNumber());
-            // TODO : DO THIS
-//            updatedDoc.setPassword();
             updatedDoc.setPhoneNumber(doctor.getPhoneNumber());
             updatedDoc.setSpecialisation(doctor.getSpecialisation());
             updatedDoc.setRetirementDate(doctor.getRetirementDate());
@@ -67,7 +67,6 @@ public class DoctorController {
     }
 
     // WARD
-
     @GetMapping("{doc_id}/view-ward")
     public ResponseEntity<List<Patient_Register>> viewWardList(@PathVariable Long doc_id) {
         if(doctorService.getDoctorById(doc_id).isEmpty()) {
@@ -87,10 +86,8 @@ public class DoctorController {
         return ResponseEntity.ok().body(doctorService.getPatientRegister(id).orElse(null));
     }
 
-
     // PATIENT
-
-    @GetMapping("{doc_id}/view-patient/")
+    @GetMapping("{doc_id}/view-patient")
     public ResponseEntity<List<Patient>> viewPatients(@PathVariable Long doc_id) {
         if(doctorService.getDoctorById(doc_id).isEmpty()){
             return ResponseEntity.notFound().build();
@@ -108,7 +105,6 @@ public class DoctorController {
 
 
     // REPORTS
-
     // TODO: REPORTS PUBLIC OR PRIVATE?
     // TODO: proper error for if not found doctor and if not found report
     @GetMapping("{doc_id}/view-report/{rep_id}")
@@ -120,14 +116,18 @@ public class DoctorController {
         return rep.map(report -> ResponseEntity.ok().body(report)).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("{doc_id}/view-report/")
+    @GetMapping("view-report-by-followup/{followup_id}")
+    public ResponseEntity<Optional<Report>> viewReportByFollowup(@PathVariable Long followup_id) {
+        return ResponseEntity.ok().body(doctorService.getReportByFollowupId(followup_id));
+    }
+
+    @GetMapping("{doc_id}/view-report")
     public ResponseEntity<List<Report>> viewReports(@PathVariable Long doc_id) {
         if(doctorService.getDoctorById(doc_id).isEmpty()){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().body(doctorService.getAllReports(doc_id));
     }
-
 
     @GetMapping("{doc_id}/view-report/ward/{reg_id}")
     public ResponseEntity<List<Report>> viewReportsOfWard(@PathVariable Long doc_id, @PathVariable Long reg_id) {
@@ -146,16 +146,15 @@ public class DoctorController {
     }
 
     @PostMapping("/create-report")
-    public ResponseEntity<String> createPatientReport(@RequestBody Report report) {
+    public ResponseEntity<Report> createPatientReport(@RequestBody Report report) {
         if(doctorService.getDoctorById(report.getDoctor().getId()).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         doctorService.createReport(report);
-        return ResponseEntity.ok().body("Report created successfully");
+        return ResponseEntity.ok().body(report);
     }
 
     // ================== COMPLAINTS ==================
-
     @GetMapping("/{doc_id}/complaints")
     public ResponseEntity<List<Complaint>> getComplaints(@PathVariable Long doc_id) {
         if (doctorService.getDoctorById(doc_id).isEmpty()) {
@@ -164,14 +163,13 @@ public class DoctorController {
         return ResponseEntity.ok().body(doctorService.getComplaints(doc_id));
     }
 
-    @PutMapping("/complaints/{comp_id}/address")
-    public ResponseEntity<String> addressComplaint(@PathVariable Long comp_id) {
-        doctorService.addressComplaint(comp_id);
+    @PutMapping("/complaints/address")
+    public ResponseEntity<String> addressComplaint(@RequestBody Complaint complaint) {
+        doctorService.addressComplaint(complaint);
         return ResponseEntity.ok("Complaint has been addressed successfully.");
     }
 
     // ================== FOLLOW-UPS ==================
-
     @GetMapping("/{doc_id}/followups")
     public ResponseEntity<List<Followup>> getFollowups(@PathVariable Long doc_id) {
         if (doctorService.getDoctorById(doc_id).isEmpty()) {
@@ -186,8 +184,13 @@ public class DoctorController {
         return ResponseEntity.ok("Follow-up registered successfully.");
     }
 
-    // ================== REMARKS ==================
+    @PutMapping("/addressFollowup")
+    public ResponseEntity<String> addressFollowup( @RequestBody Followup followup) {
+        doctorService.addressFollowup(followup);
+        return ResponseEntity.ok("Followup addressed successfully");
+    }
 
+    // ================== REMARKS ==================
     @GetMapping("/{doc_id}/remarks")
     public ResponseEntity<List<Remark>> getRemarks(@PathVariable Long doc_id) {
         if (doctorService.getDoctorById(doc_id).isEmpty()) {
@@ -204,6 +207,5 @@ public class DoctorController {
         }
         return ResponseEntity.ok().body(doctorService.getFilteredRemarksByPatientId(doc_id, pat_id));
     }
-
 
 }

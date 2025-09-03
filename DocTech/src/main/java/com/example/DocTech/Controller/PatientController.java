@@ -19,7 +19,6 @@ public class PatientController {
 
     PatientController(
             PatientService patientService
-
     ){
         this.patientService = patientService;
     }
@@ -31,6 +30,11 @@ public class PatientController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().body(patientService.getPatientById(pat_id).get());
+    }
+    @GetMapping("/{pat_id}/getPatientDoctors")
+    public ResponseEntity<List<Doctor>> getPatientDoctor(@PathVariable Long pat_id) {
+        if(patientService.getPatientById(pat_id).isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().body(patientService.getPatientsDoctors(pat_id));
     }
 
     @GetMapping("/{pat_id}/ward")
@@ -67,6 +71,10 @@ public class PatientController {
         return ResponseEntity.ok().body(patientService.getDoctor(doc_id).orElse(null));
     }
 
+    @GetMapping("/view-doctors")
+    public ResponseEntity<List<Doctor>> getAllDoctors() {
+        return ResponseEntity.ok().body(patientService.getDoctors());
+    }
 
     @PostMapping("/{pat_id}/doctor/{doc_id}/rate")
     public ResponseEntity<String> rateDoctor(@PathVariable Long pat_id, @PathVariable Long doc_id, @RequestBody Float rating) {
@@ -86,15 +94,6 @@ public class PatientController {
         return ResponseEntity.ok().body("Deleted the patient successfully");
     }
 
-    @PostMapping("/{pat_id}/report/")
-    public ResponseEntity<String> registerDoctorComplain(@PathVariable Long pat_id, @RequestBody Complaint complaint) {
-        if(patientService.getPatientById(pat_id).isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        patientService.reportDoctor(complaint);
-        return ResponseEntity.ok().body("Doctor reported successfully");
-    }
-
     // Complaints
     @PostMapping("/{pat_id}/report")
     public ResponseEntity<String> registerDoctorComplaint(@PathVariable Long pat_id, @RequestBody Complaint complaint) {
@@ -103,6 +102,13 @@ public class PatientController {
         }
         patientService.reportDoctor(complaint);
         return ResponseEntity.ok("Doctor reported successfully.");
+    }
+    @GetMapping("/{doc_id}/complaints")
+    public ResponseEntity<List<Complaint>> getComplaints(@PathVariable Long doc_id) {
+        if (patientService.getPatientById(doc_id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(patientService.getComplaints(doc_id));
     }
 
     // Follow-ups

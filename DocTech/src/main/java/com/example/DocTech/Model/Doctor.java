@@ -1,5 +1,6 @@
 package com.example.DocTech.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -84,18 +85,23 @@ public class Doctor {
     private String phoneNumber;
 
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Patient_Register> patientRegister;
 
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Report> reports;
 
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Followup> followups;
 
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Remark>  remarks;
 
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Complaint> complaints;
 
 

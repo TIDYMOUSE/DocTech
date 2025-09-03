@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -38,15 +39,24 @@ public class AuthService {
         } else if ("PATIENT".equals(request.getUserType())) {
             return authenticatePatient(request);
         }
-        throw new RuntimeException("Invalid user type");
+        throw new IllegalArgumentException("Invalid user type: " + request.getUserType());
     }
 
     public String registerDoctor(DoctorRegisterRequest registerRequest) {
             if (doctorRepository.findByEmail(registerRequest.email()).isPresent()) {
                 throw new IllegalArgumentException("Doctor with this email already exists.");
             }
-            byte[] imageBytes = registerRequest.image().map(image -> Base64.getDecoder().decode(image)).orElse(null);
-            Doctor doc = Doctor.builder()
+        byte[] imageBytes = null;
+        if (registerRequest.image().isPresent() && !registerRequest.image().get().isEmpty()) {
+            try {
+                String base64Image = registerRequest.image().get();
+                imageBytes = Base64.getDecoder().decode(base64Image);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid Base64 image data", e);
+            }
+        }
+
+        Doctor doc = Doctor.builder()
                 .firstName(registerRequest.firstName())
                 .lastName(registerRequest.lastName())
                 .specialisation(registerRequest.specialisation())
@@ -57,12 +67,13 @@ public class AuthService {
                 .image(imageBytes)
                 .gender(registerRequest.gender())
                 .email(registerRequest.email())
+                    .licenseNumber(registerRequest.licenseNumber())
                 .phoneNumber(registerRequest.phoneNumber())
                 .build();
 
-        doctorRepository.save(doc);
+        Doctor saveDoc = doctorRepository.save(doc);
 
-        return jwtService.generateToken(registerRequest.email(), "ROLE_DOCTOR"); // C1
+        return jwtService.generateToken(registerRequest.email(), saveDoc.getId(),"ROLE_DOCTOR"); // C1
     }
 
     public String registerPatient(PatientRegisterRequest registerRequest) {
@@ -77,7 +88,7 @@ public class AuthService {
                 .gender(registerRequest.gender())
                 .height(registerRequest.height())
                 .weight(registerRequest.weight())
-                .bloodGroup(registerRequest.bloodGroup().orElse(null))
+                .bloodGroup(registerRequest.bloodGroup())
                 .number(registerRequest.number())
                 .email(registerRequest.email())
                 .emergencyNumber(registerRequest.emergencyNumber().orElse(null))
@@ -86,15 +97,15 @@ public class AuthService {
                 .password(passwordEncoder.encode(registerRequest.password()))
                 .build();
 
-        patientRepository.save(pat);
-        return jwtService.generateToken(registerRequest.email(), "ROLE_PATIENT");
+        Patient savPat = patientRepository.save(pat);
+        return jwtService.generateToken(registerRequest.email(), savPat.getId(), "ROLE_PATIENT");
     }
 
     private LoginResponse authenticateDoctor(LoginRequest request) {
         Doctor doctor = doctorRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+                .orElseThrow(() -> new NoSuchElementException("Doctor not found"));
 
-        String token = jwtService.generateToken(doctor.getEmail(), "ROLE_DOCTOR");
+        String token = jwtService.generateToken(doctor.getEmail(), doctor.getId(), "ROLE_DOCTOR");
 
         return LoginResponse.builder()
                 .token(token)
@@ -106,9 +117,9 @@ public class AuthService {
 
     private LoginResponse authenticatePatient(LoginRequest request) {
         Patient patient = patientRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+                .orElseThrow(() -> new NoSuchElementException("Patient not found"));
 
-        String token = jwtService.generateToken(patient.getEmail(), "ROLE_PATIENT");
+        String token = jwtService.generateToken(patient.getEmail(), patient.getId(), "ROLE_PATIENT");
 
         return LoginResponse.builder()
                 .token(token)
@@ -127,8 +138,9 @@ public class AuthService {
             LocalDate joinDate,
             Doctor.Gender gender,
             String phoneNumber,
+            String licenseNumber,
             Optional<LocalDate> retirementDate,
-            Optional<byte[]> image
+            Optional<String> image
     ) {}
 
     public record PatientRegisterRequest(
@@ -141,7 +153,7 @@ public class AuthService {
             Patient.Gender gender,
             BigDecimal height,
             BigDecimal weight,
-            Optional<Patient.BloodGroup> bloodGroup,
+            Patient.BloodGroup bloodGroup,
             String number,
             Optional<String> emergencyNumber,
             Optional<String> address,

@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
   imports: [
     RouterOutlet,
     CommonModule,
-
     // BrowserAnimationsModule,
   ],
   templateUrl: './app.component.html',

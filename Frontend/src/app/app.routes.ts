@@ -8,14 +8,6 @@ export const routes: Routes = [
     },
   },
   {
-    path: 'dashboard',
-    loadComponent: () => {
-      return import('./dashboard/dashboard.component').then(
-        (m) => m.DashboardComponent
-      );
-    },
-  },
-  {
     path: 'login/doctor',
     loadComponent: () =>
       import('./auth/login-doc/login-doc.component').then(
@@ -41,6 +33,22 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./auth/register-pat/register-pat.component').then(
         (m) => m.RegisterPatComponent
+      ),
+  },
+
+  {
+    path: 'profile-doc',
+    loadComponent: () =>
+      import('./profile/doctor-profile/doctor-profile.component').then(
+        (m) => m.DoctorProfileComponent
+      ),
+  },
+
+  {
+    path: 'profile-pat',
+    loadComponent: () =>
+      import('./profile/patient-profile/patient-profile.component').then(
+        (m) => m.PatientProfileComponent
       ),
   },
 ];

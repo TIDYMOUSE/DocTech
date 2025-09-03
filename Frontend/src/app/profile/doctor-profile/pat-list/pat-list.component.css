@@ -1,0 +1,13 @@
+:host ::ng-deep {
+  .p-paginator {
+    background: white;
+    border: none;
+    padding: 1rem;
+  }
+  .p-button.p-button-outlined {
+    border-width: 1px;
+  }
+  .p-dropdown {
+    min-width: 8rem;
+  }
+}

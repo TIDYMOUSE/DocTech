@@ -1,0 +1,267 @@
+<p-toast></p-toast>
+<div class="max-w-6xl mx-auto h-dvh p-6 flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex items-center">
+    <h1 class="text-3xl font-bold text-gray-800">My Complaints</h1>
+  </div>
+
+  <!-- List View -->
+  @if(!patStore.isLoadingComp() || !patStore.isLoadingDoctors){
+  <div *ngIf="currentView === 'list'" class="grow flex flex-col gap-3">
+    @if (patStore.complaints().length) {
+    <!-- Action Bar -->
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-semibold text-gray-700">Complaint History</h2>
+      <p-button
+        label="Register New Complaint"
+        icon="pi pi-plus"
+        severity="danger"
+        (onClick)="switchToForm()"
+      >
+      </p-button>
+    </div>
+
+    }
+    <!-- Complaints List -->
+    <div
+      *ngIf="patStore.complaints().length > 0; else noComplaints"
+      class="flex flex-col gap-4"
+    >
+      @for (complaint of patStore.complaints(); track complaint.id) {
+      <div
+        class="bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden"
+      >
+        <!-- Status indicator bar -->
+        <div
+          class="h-1 w-full"
+          [ngClass]="{
+            'bg-green-500': complaint.addressed,
+            'bg-orange-500': !complaint.addressed
+          }"
+        ></div>
+
+        <div class="flex flex-col gap-4 p-6">
+          <!-- Complaint ID Section -->
+          <div class="flex">
+            <div class="flex justify-center lg:justify-start w-full">
+              <div class="flex w-full grow gap-3">
+                <div
+                  class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md transition-all duration-200"
+                  [ngClass]="{
+                    'bg-green-500 hover:bg-green-600': complaint.addressed,
+                    'bg-orange-500 hover:bg-orange-600': !complaint.addressed
+                  }"
+                >
+                  {{ complaint.id }}
+                </div>
+
+                <div class="grow">
+                  <h3
+                    class="text-lg font-semibold text-gray-800 flex items-center gap-2"
+                  >
+                    Dr. {{ getDoctorName(complaint.doctor.id) }}
+                  </h3>
+                  <p class="text-sm text-gray-500 flex items-center gap-1">
+                    <i class="pi pi-calendar text-xs"></i>
+                    Submitted: {{ formatDate(complaint.id) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="flex items-center justify-center lg:items-start lg:justify-end"
+            >
+              <div class="flex flex-col gap-2 min-w-[140px]">
+                @if (complaint.addressed) {
+                <p-button
+                  icon="pi pi-eye"
+                  label="View Response"
+                  severity="success"
+                  [outlined]="true"
+                  size="small"
+                  [raised]="true"
+                  class="w-full"
+                  (onClick)="showDialog()"
+                ></p-button>
+
+                <!-- dialog -->
+                <p-dialog
+                  header="Response"
+                  [modal]="true"
+                  [(visible)]="dialogVisibility"
+                  [style]="{ width: '25rem' }"
+                >
+                  <div class="bg-gray-50 rounded-lg p-3">I'm sorry!</div>
+                </p-dialog>
+                } @else {
+                <p-tag
+                  icon="pi pi-clock"
+                  severity="warning"
+                  value="Pending Review"
+                  class="w-full justify-center"
+                ></p-tag>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Complaint Details Section -->
+          <div class="flex-1 space-y-4">
+            <!-- Complaint Content -->
+            <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-blue-200">
+              <p class="text-gray-700 leading-relaxed text-sm md:text-base">
+                {{ complaint.issue }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+    <ng-template #noComplaints>
+      <div class="bg-white p-6 h-full flex justify-center items-center">
+        <div class="p-6 rounded-lg flex flex-col items-center gap-3 w-fit">
+          <div class="flex flex-col items-center">
+            <i class="pi pi-inbox text-4xl text-gray-400"></i>
+            <h3 class="text-lg font-medium text-gray-600">
+              No Complaints Found!
+            </h3>
+            <p class="text-gray-500">
+              You haven't registered any complaints yet.
+            </p>
+          </div>
+          <p-button
+            label="Register Your First Complaint"
+            icon="pi pi-plus"
+            severity="danger"
+            (onClick)="switchToForm()"
+          >
+          </p-button>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+  } @else {
+  <div class="card">
+    <div
+      class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900"
+    >
+      <div class="flex mb-4">
+        <p-skeleton shape="circle" size="4rem" class="mr-2" />
+        <div>
+          <p-skeleton width="10rem" class="mb-2" />
+          <p-skeleton width="5rem" class="mb-2" />
+          <p-skeleton height=".5rem" />
+        </div>
+      </div>
+      <p-skeleton width="100%" height="150px" />
+      <div class="flex justify-between mt-4">
+        <p-skeleton width="4rem" height="2rem" />
+        <p-skeleton width="4rem" height="2rem" />
+      </div>
+    </div>
+  </div>
+  }
+  <!-- Form View -->
+  <div *ngIf="currentView === 'form'">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-semibold text-gray-700">
+        Register New Complaint
+      </h2>
+      <p-button
+        label="Back to List"
+        icon="pi pi-arrow-left"
+        severity="secondary"
+        (onClick)="switchToList()"
+      >
+      </p-button>
+    </div>
+
+    <p-card class="max-w-2xl">
+      <form
+        [formGroup]="complaintForm"
+        (ngSubmit)="onSubmit()"
+        class="space-y-6"
+      >
+        <!-- Doctor Selection -->
+        <div class="flex flex-col space-y-2">
+          <label for="doctor" class="font-medium text-gray-700">
+            Select Doctor <span class="text-red-500">*</span>
+          </label>
+          <p-select
+            name="doctor"
+            formControlName="doctorId"
+            [options]="doctorOptions()"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Choose a doctor"
+            class="w-full"
+            [showClear]="false"
+          >
+          </p-select>
+          <small
+            *ngIf="
+              complaintForm.get('doctorId')?.invalid &&
+              complaintForm.get('doctorId')?.touched
+            "
+            class="text-red-500"
+          >
+            Please select a doctor
+          </small>
+        </div>
+
+        <!-- Issue Description -->
+        <div class="flex flex-col space-y-2">
+          <label for="issue" class="font-medium text-gray-700">
+            Describe Your Complaint <span class="text-red-500">*</span>
+          </label>
+          <textarea
+            pInputTextarea
+            id="issue"
+            formControlName="issue"
+            rows="6"
+            placeholder="Please provide detailed information about your complaint..."
+            class="w-full"
+            autoResize="true"
+          >
+          </textarea>
+          <small
+            *ngIf="
+              complaintForm.get('issue')?.invalid &&
+              complaintForm.get('issue')?.touched
+            "
+            class="text-red-500"
+          >
+            <span *ngIf="complaintForm.get('issue')?.errors?.['required']">
+              Please describe your complaint
+            </span>
+            <span *ngIf="complaintForm.get('issue')?.errors?.['minlength']">
+              Complaint description must be at least 10 characters long
+            </span>
+          </small>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end space-x-3 pt-4">
+          <p-button
+            label="Cancel"
+            severity="secondary"
+            type="button"
+            (onClick)="switchToList()"
+          >
+          </p-button>
+          <p-button
+            label="Submit Complaint"
+            icon="pi pi-send"
+            type="submit"
+            [disabled]="complaintForm.invalid || isSubmitting"
+            [loading]="isSubmitting"
+          >
+          </p-button>
+        </div>
+      </form>
+    </p-card>
+  </div>
+</div>

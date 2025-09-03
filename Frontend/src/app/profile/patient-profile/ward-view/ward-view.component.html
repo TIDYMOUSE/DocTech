@@ -1,0 +1,247 @@
+@if (!patStore.isLoadingWard() && !patStore.isLoadingRem() &&
+!patStore.isLoadingRep() && !patStore.isLoadingComp() &&
+!patStore.isLoadingFol()) { @let patientRegister = patStore.patientRegister();
+<div class="bg-gray-50 p-4">
+  <div class="max-w-4xl mx-auto flex flex-col gap-3">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-gray-900">Ward Details</h1>
+    </div>
+
+    <!-- Ward Information Card -->
+    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col gap-8">
+      <h2 class="text-2xl font-semibold text-gray-900">Ward Information</h2>
+
+      <div class="flex flex-col md:flex-row justify-around gap-6">
+        <!-- Room Information -->
+        <div
+          class="w-full flex flex-col gap-3 border-b md:border-r md:border-b-0 p-3 border-black"
+        >
+          <h3 class="text-lg font-semibold text-gray-700">Room Details</h3>
+
+          <div class="flex items-center gap-3">
+            <i class="pi pi-home text-blue-500 text-xl"></i>
+            <div>
+              <p class="text-sm text-gray-500">Room Number</p>
+              <p class="font-semibold text-lg">{{ patientRegister?.roomNo }}</p>
+            </div>
+          </div>
+
+          <div
+            class="flex items-center gap-3"
+            *ngIf="patientRegister?.bedNumber"
+          >
+            <i class="pi pi-th-large text-green-500 text-xl"></i>
+            <div>
+              <p class="text-sm text-gray-500">Bed Number</p>
+              <p class="font-semibold text-lg">
+                {{ patientRegister?.bedNumber }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admission Details -->
+        <div
+          class="w-full flex flex-col gap-3 border-b md:border-r md:border-b-0 border-black p-3"
+        >
+          <h3 class="text-lg font-semibold text-gray-700">Admission Details</h3>
+
+          <div class="flex items-center gap-3">
+            <i class="pi pi-calendar-plus text-purple-500 text-xl"></i>
+            <div>
+              <p class="text-sm text-gray-500">Admission Date</p>
+              <p class="font-semibold">
+                {{ formatDate(patientRegister?.admissionDate) }}
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="flex items-center gap-3"
+            *ngIf="patientRegister?.dischargeDate"
+          >
+            <i class="pi pi-calendar-minus text-red-500 text-xl"></i>
+            <div>
+              <p class="text-sm text-gray-500">Discharge Date</p>
+              <p class="font-semibold">
+                {{ formatDate(patientRegister?.dischargeDate) }}
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="flex items-center gap-3"
+            *ngIf="!patientRegister?.dischargeDate && patientRegister?.admitted"
+          >
+            <i class="pi pi-clock text-orange-500 text-xl"></i>
+            <div>
+              <p class="text-sm text-gray-500">Days Admitted</p>
+              <p class="font-semibold">{{ calculateDaysAdmitted() }} days</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Information -->
+        <div class="w-full flex flex-col gap-3 p-3">
+          <h3 class="text-lg font-semibold text-gray-700">Current Status</h3>
+
+          <div class="space-y-2">
+            <p-chip
+              [label]="
+                patientRegister?.admitted ? 'Active Admission' : 'Discharged'
+              "
+              [icon]="
+                patientRegister?.admitted
+                  ? 'pi pi-check-circle'
+                  : 'pi pi-times-circle'
+              "
+              [style]="{
+                'background-color': patientRegister?.admitted
+                  ? '#10b981'
+                  : '#ef4444',
+                color: 'white'
+              }"
+            >
+            </p-chip>
+
+            <div class="mt-3" *ngIf="getTotalRecords() > 0">
+              <p class="text-sm text-gray-500">Total Medical Records</p>
+              <p class="font-bold text-2xl text-blue-600">
+                {{ getTotalRecords() }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assigned Doctor Information -->
+      <h3 class="text-lg font-semibold text-gray-700">Assigned Doctor</h3>
+      <div
+        *ngIf="patientRegister?.doctor"
+        class="flex flex-col gap-3 bg-gray-50 p-3 rounded-lg"
+      >
+        <div class="flex flex-col gap-4 p-4 rounded-lg">
+          <div class="flex gap-3 items-center">
+            <p-avatar
+              [image]="getImageSrc(patientRegister?.doctor ?? null) || ''"
+              [label]="
+                !patientRegister?.doctor?.image
+                  ? getInitials(patientRegister?.doctor)
+                  : ''
+              "
+              size="large"
+              shape="circle"
+            >
+            </p-avatar>
+
+            <div>
+              <h4 class="text-xl font-semibold text-gray-900">
+                Dr. {{ patientRegister?.doctor?.firstName }}
+                {{ patientRegister?.doctor?.lastName }}
+              </h4>
+              <p-tag
+                [value]="patientRegister?.doctor?.specialisation"
+                severity="info"
+                class="mt-1"
+              ></p-tag>
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col md:flex-row md:items-center gap-4 mt-2 text-sm text-gray-600"
+          >
+            <div class="flex items-center gap-1">
+              <i class="pi pi-phone"></i>
+              <span>{{ patientRegister?.doctor?.phoneNumber }}</span>
+            </div>
+            <div
+              class="flex items-center gap-1"
+              *ngIf="patientRegister?.doctor?.email"
+            >
+              <i class="pi pi-envelope"></i>
+              <span>{{ patientRegister?.doctor?.email }}</span>
+            </div>
+            <div
+              class="flex items-center gap-1"
+              *ngIf="patientRegister?.doctor?.rating"
+            >
+              <i class="pi pi-star-fill text-yellow-500"></i>
+              <span>{{ patientRegister?.doctor?.rating }}/5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medical Records Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div
+        class="bg-white rounded-lg p-4 text-center border border-gray-300 shadow-md"
+      >
+        <i class="pi pi-file-edit text-3xl text-blue-500 mb-2"></i>
+        <h3 class="text-lg font-semibold text-gray-700">Reports</h3>
+        <p class="text-2xl font-bold text-blue-600">{{ getReportsCount() }}</p>
+      </div>
+
+      <div
+        class="bg-white rounded-lg p-4 text-center border border-gray-300 shadow-md"
+      >
+        <i class="pi pi-calendar-plus text-3xl text-green-500 mb-2"></i>
+        <h3 class="text-lg font-semibold text-gray-700">Followups</h3>
+        <p class="text-2xl font-bold text-green-600">
+          {{ getFollowupsCount() }}
+        </p>
+      </div>
+
+      <div
+        class="bg-white rounded-lg p-4 text-center border border-gray-300 shadow-md"
+      >
+        <i class="pi pi-exclamation-triangle text-3xl text-orange-500 mb-2"></i>
+        <h3 class="text-lg font-semibold text-gray-700">Complaints</h3>
+        <p class="text-2xl font-bold text-orange-600">
+          {{ getComplaintsCount() }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow-lg p-6" *ngIf="hasRecentActivity()">
+      <h3 class="text-lg font-semibold text-gray-700 mb-4">Recent Activity</h3>
+
+      <div class="space-y-3">
+        <div
+          *ngFor="let activity of getTopAcitivites()"
+          class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+        >
+          <i [class]="activity.icon + ' text-xl ' + activity.color"></i>
+          <div>
+            <p class="font-medium">{{ activity.title }}</p>
+            <p class="text-sm text-gray-600">{{ activity.date }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+} @else {
+<div class="card">
+  <div
+    class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900"
+  >
+    <div class="flex mb-4">
+      <p-skeleton shape="circle" size="4rem" class="mr-2" />
+      <div>
+        <p-skeleton width="10rem" class="mb-2" />
+        <p-skeleton width="5rem" class="mb-2" />
+        <p-skeleton height=".5rem" />
+      </div>
+    </div>
+    <p-skeleton width="100%" height="150px" />
+    <div class="flex justify-between mt-4">
+      <p-skeleton width="4rem" height="2rem" />
+      <p-skeleton width="4rem" height="2rem" />
+    </div>
+  </div>
+</div>
+}

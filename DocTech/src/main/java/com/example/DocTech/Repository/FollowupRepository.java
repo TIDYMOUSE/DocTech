@@ -1,6 +1,7 @@
 package com.example.DocTech.Repository;
 
 import com.example.DocTech.Model.Followup;
+import com.example.DocTech.Model.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

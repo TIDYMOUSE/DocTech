@@ -1,6 +1,7 @@
 package com.example.DocTech.Model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -104,17 +105,22 @@ public class Patient {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Report> reports;
 
     @OneToOne(mappedBy = "patient")
+    @JsonIgnore
     private Patient_Register patientRegister;
 
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Followup>  followups;
 
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Remark>  remarks;
 
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Complaint> complaints;
 }

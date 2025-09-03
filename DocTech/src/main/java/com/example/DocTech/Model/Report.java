@@ -1,5 +1,6 @@
 package com.example.DocTech.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,6 +47,7 @@ public class Report {
 
     @OneToOne
     @JoinColumn(name = "followup_id", referencedColumnName = "followup_id")
+    @JsonBackReference
     private Followup followup;
 
 }

@@ -1,0 +1,218 @@
+@if(!docStore.isLoadingPat()){
+<!-- Filter and Search Section -->
+<div class="p-4 border-t border-x border-slate-200 rounded-t-lg">
+  <div class="flex gap-4 items-center">
+    <p-iconfield
+      class="flex flex-1/2 gap-1 justify-center items-center min-w-64"
+    >
+      <p-inputicon styleClass="pi pi-search" />
+      <input
+        type="text"
+        pInputText
+        placeholder="Search by patient name, ID, or phone..."
+        class="w-full"
+        [ngModel]="searchTerm()"
+        (input)="onSearch($any($event.target).value)"
+      />
+    </p-iconfield>
+
+    <!-- Filters -->
+    <div class="flex gap-3">
+      <p-dropdown
+        [options]="statusOptions"
+        placeholder="Filter"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="selectedStatus()"
+        (onChange)="onFilter($event.value)"
+      ></p-dropdown>
+
+      <p-dropdown
+        [options]="sortOptions"
+        placeholder="Sort"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="selectedSort()"
+        (onChange)="onSort($event.value)"
+      ></p-dropdown>
+    </div>
+  </div>
+</div>
+
+<!-- Results Info -->
+<div
+  class="bg-white px-4 py-2 border-x border-slate-200 text-sm text-slate-600"
+>
+  {{ resultsInfo() }}
+  <span class="flex gap-3 items-center float-right">
+    Results per page:
+    <select
+      [ngModel]="itemsPerPage()"
+      (change)="onItemsPerPageChange($any($event.target).value)"
+      class="border border-slate-300 rounded px-2 py-1"
+    >
+      <option value="8">8</option>
+      <option value="16">16</option>
+      <option value="24">24</option>
+    </select>
+    View: @for (view of viewOptions; track $index) {
+    <p-button
+      [icon]="view === 'grid' ? 'pi pi-th-large' : 'pi pi-bars'"
+      styleClass="aspect-square "
+      (click)="currentView.set(view)"
+      variant="outlined"
+      size="small"
+      [severity]="currentView() === view ? 'primary' : 'secondary'"
+    ></p-button>
+
+    }
+  </span>
+</div>
+
+<!-- Patient Cards Grid -->
+<div class="bg-white border-x border-slate-200">
+  <div
+    class="grid gap-4 p-4 w-full"
+    [ngClass]="currentView() === 'list' ? 'grid-cols-1 ' : 'grid-cols-3'"
+  >
+    <div
+      *ngFor="let patient of paginatedPatients(); trackBy: trackByPatientId"
+      class="border border-slate-300 rounded-lg p-4 hover:shadow-md transition-shadow w-full"
+      [ngClass]="
+        !isAdmitted(patient.id) && selectedStatus() !== 'discharged'
+          ? 'bg-slate-50'
+          : 'bg-white'
+      "
+    >
+      <!-- Card Header -->
+      <div class="flex justify-between items-start mb-3">
+        <div class="flex items-start gap-3">
+          <div>
+            <h3 class="font-semibold text-lg text-slate-800">
+              {{ getPatientFullName(patient) }}
+            </h3>
+            <p class="text-sm text-slate-500">
+              {{ patient.gender }} | Age:
+              {{ calculateAge(patient.dob) }}
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-1">
+          @if (!selectedStatus()) {
+          <p-tag
+            [value]="isAdmitted(patient.id) ? 'Admitted' : 'Discharged'"
+            [severity]="getStatusSeverity(patient)"
+            [rounded]="true"
+          ></p-tag>
+          }
+        </div>
+      </div>
+
+      <!-- Card Content -->
+      <div
+        class="gap-4 mb-4 text-sm"
+        [ngClass]="
+          currentView() === 'list'
+            ? 'flex justify-between pr-3'
+            : 'grid grid-cols-2'
+        "
+      >
+        <div *ngIf="getRegister(patient.id)?.roomNo">
+          <span class="text-slate-500">Room No:</span>
+          <p class="font-medium">{{ getRegister(patient.id)?.roomNo }}</p>
+        </div>
+        <div *ngIf="getRegister(patient.id)?.bedNumber">
+          <span class="text-slate-500">Bed Number:</span>
+          <p class="font-medium">{{ getRegister(patient.id)?.bedNumber }}</p>
+        </div>
+        <div *ngIf="getRegister(patient.id)?.admissionDate">
+          <span class="text-slate-500">Admission Date:</span>
+          <p class="font-medium">
+            {{ formatDate(getRegister(patient.id)?.admissionDate) }}
+          </p>
+        </div>
+        <div *ngIf="getRegister(patient.id)?.dischargeDate">
+          <span class="text-slate-500">Discharge Date:</span>
+          <p class="font-medium">
+            {{ formatDate(getRegister(patient.id)?.dischargeDate) }}
+          </p>
+        </div>
+        <div>
+          <span class="text-slate-500">Phone:</span>
+          <p class="font-medium">{{ patient.number }}</p>
+        </div>
+
+        <div *ngIf="patient.bloodGroup">
+          <span class="text-slate-500">Blood Group:</span>
+          <p class="font-medium text-red-600">{{ patient.bloodGroup }}</p>
+        </div>
+
+        <div>
+          <span class="text-slate-500">Height/Weight:</span>
+          <p class="font-medium">
+            {{ patient.height }}cm / {{ patient.weight }}kg
+          </p>
+        </div>
+      </div>
+
+      <!-- Card Footer - Action Buttons -->
+      <div class="mt-5">
+        <div class="border-t border-gray-300 mb-3"></div>
+        <div class="flex justify-between items-center">
+          <div class="flex gap-2">
+            <p-button
+              label="View Details"
+              icon="pi pi-eye"
+              size="small"
+              severity="secondary"
+              [outlined]="true"
+              (onClick)="viewPatientDetails(patient)"
+            ></p-button>
+
+            <p-button
+              label="Reports"
+              icon="pi pi-file"
+              size="small"
+              severity="info"
+              [outlined]="true"
+              (onClick)="viewReports(patient)"
+            ></p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="bg-white border border-slate-200 rounded-b-lg">
+  <p-paginator
+    [rows]="itemsPerPage()"
+    [totalRecords]="filteredPatients().length"
+    [first]="first()"
+    (onPageChange)="onPageChange($event)"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Page {currentPage} of {totalPages}"
+  ></p-paginator>
+</div>
+} @else {
+<div class="card">
+  <div
+    class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900"
+  >
+    <div class="flex mb-4">
+      <p-skeleton shape="circle" size="4rem" class="mr-2" />
+      <div>
+        <p-skeleton width="10rem" class="mb-2" />
+        <p-skeleton width="5rem" class="mb-2" />
+        <p-skeleton height=".5rem" />
+      </div>
+    </div>
+    <p-skeleton width="100%" height="150px" />
+    <div class="flex justify-between mt-4">
+      <p-skeleton width="4rem" height="2rem" />
+      <p-skeleton width="4rem" height="2rem" />
+    </div>
+  </div>
+</div>
+}

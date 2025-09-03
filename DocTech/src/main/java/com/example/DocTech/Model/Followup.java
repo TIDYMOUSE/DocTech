@@ -1,5 +1,7 @@
 package com.example.DocTech.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,6 +44,7 @@ public class Followup {
     private Status status;
 
     @OneToOne(mappedBy = "followup")
+    @JsonManagedReference
     private Report report;
 
 }

@@ -1,1 +1,411 @@
-<p>register-pat works!</p>
+<p-toast />
+<div
+  class="min-h-screen flex items-center justify-center bg-[url('/doc-reg-bg.jpeg')] bg-center bg-cover p-4 sm:p-6 lg:p-8"
+>
+  <div class="w-full max-w-4xl">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl sm:text-4xl font-main font-bold text-gray-900 mb-2">
+        Patient Registration
+      </h1>
+      <p class="text-gray-600">A step towards personalized medical treatment</p>
+    </div>
+
+    <div
+      class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+    >
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+        <h2 class="text-white font-semibold text-xl">Registration Form</h2>
+      </div>
+
+      <form
+        #RegisterPat="ngForm"
+        (ngSubmit)="onSubmit(RegisterPat)"
+        class="p-6 sm:p-8 lg:p-12"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-8">
+          <!-- First Name -->
+          <div class="w-full space-y-2 md:col-span-2">
+            <p-input-group class="w-full">
+              <p-inputgroup-addon class="bg-gray-50">
+                <i class="pi pi-user"></i>
+              </p-inputgroup-addon>
+              <p-floatLabel class="w-full">
+                <input
+                  pInputText
+                  name="firstName"
+                  [(ngModel)]="PatientRegister.firstName"
+                  class="w-full"
+                  required
+                  maxlength="30"
+                  #firstName="ngModel"
+                />
+                <label for="firstName" class="text-gray-600">First Name</label>
+              </p-floatLabel>
+            </p-input-group>
+            <p-message
+              *ngIf="
+                (formSubmitted() || firstName.touched) &&
+                firstName.invalid &&
+                firstName.hasError('required')
+              "
+              severity="error"
+              text="First name is required"
+              [closable]="true"
+              [life]="3000"
+              icon="pi pi-ban"
+              size="small"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Middle Name -->
+          <p-input-group class="w-full md:col-span-2 h-fit">
+            <p-inputgroup-addon class="bg-gray-50">
+              <i class="pi pi-user"></i>
+            </p-inputgroup-addon>
+            <p-floatLabel class="">
+              <input
+                pInputText
+                name="middleName"
+                [(ngModel)]="PatientRegister.middleName"
+                class="w-full"
+                maxlength="30"
+                #middleName="ngModel"
+              />
+              <label for="middleName" class="text-gray-600">Middle Name</label>
+            </p-floatLabel>
+          </p-input-group>
+
+          <!-- Last Name -->
+          <div class="w-full space-y-2 md:col-span-2">
+            <p-input-group class="w-full">
+              <p-inputgroup-addon class="">
+                <i class="pi pi-user"></i>
+              </p-inputgroup-addon>
+              <p-floatLabel class="w-full">
+                <input
+                  pInputText
+                  maxlength="30"
+                  required
+                  name="lastName"
+                  [(ngModel)]="PatientRegister.lastName"
+                  class="w-full"
+                  #lastName="ngModel"
+                />
+                <label for="lastName" class="text-gray-600">Last Name</label>
+              </p-floatLabel>
+            </p-input-group>
+            <p-message
+              *ngIf="
+                (formSubmitted() || lastName.touched) &&
+                lastName.invalid &&
+                lastName.hasError('required')
+              "
+              severity="error"
+              text="Last name is required"
+              [closable]="true"
+              icon="pi pi-ban"
+              [life]="3000"
+              size="small"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="w-full space-y-2 md:col-span-3">
+            <p-input-group class="w-full">
+              <p-inputgroup-addon class="">
+                <i class="pi pi-phone"></i>
+              </p-inputgroup-addon>
+              <p-floatLabel class="w-full">
+                <p-input-mask
+                  name="number"
+                  [(ngModel)]="PatientRegister.number"
+                  mask="99999 99999"
+                  required
+                  class="w-full flex"
+                  #number="ngModel"
+                />
+                <label for="number" class="text-gray-600">Mobile Number</label>
+              </p-floatLabel>
+            </p-input-group>
+            <p-message
+              *ngIf="
+                (formSubmitted() || number.touched) &&
+                number.invalid &&
+                number.hasError('required')
+              "
+              severity="error"
+              text="Mobile number is required"
+              [closable]="true"
+              icon="pi pi-ban"
+              size="small"
+              [life]="3000"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Emergency Contact -->
+          <div class="w-full space-y-2 md:col-span-3">
+            <p-input-group class="w-full">
+              <p-inputgroup-addon class="">
+                <i class="pi pi-phone"></i>
+              </p-inputgroup-addon>
+              <p-floatLabel class="w-full">
+                <p-input-mask
+                  name="emergencyNumber"
+                  [(ngModel)]="PatientRegister.emergencyNumber"
+                  mask="99999 99999"
+                  class="w-full flex"
+                  #emergencyNumber="ngModel"
+                />
+                <label for="emergencyNumber" class="text-gray-600"
+                  >Emergency Number</label
+                >
+              </p-floatLabel>
+            </p-input-group>
+          </div>
+
+          <!-- Aadhar -->
+          <div class="w-full space-y-2 md:col-span-3">
+            <p-input-group class="w-full">
+              <p-inputgroup-addon class="bg-gray-50">
+                <i class="pi pi-id-card"></i>
+              </p-inputgroup-addon>
+              <p-floatLabel class="w-full">
+                <p-input-mask
+                  name="aadhar"
+                  [(ngModel)]="PatientRegister.aadhar"
+                  mask="9999 9999 9999"
+                  required
+                  fluid
+                  class="w-full flex"
+                  #aadhar="ngModel"
+                />
+                <label for="aadhar" class="text-gray-600">Aadhar Number</label>
+              </p-floatLabel>
+            </p-input-group>
+            <p-message
+              *ngIf="
+                (formSubmitted() || aadhar.touched) &&
+                aadhar.invalid &&
+                aadhar.hasError('required')
+              "
+              severity="error"
+              text="Aadhar is required"
+              [closable]="true"
+              icon="pi pi-ban"
+              [life]="3000"
+              size="small"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- DOB -->
+          <div class="w-full space-y-2 md:col-span-3">
+            <p-date-picker
+              [(ngModel)]="dobWrapper"
+              (ngModelChange)="onDateChange($event)"
+              dateFormat="yy-mm-dd"
+              name="dob"
+              showIcon="true"
+              fluid
+              required
+              #dob="ngModel"
+              placeholder="DOB"
+              class="w-full"
+            />
+          </div>
+
+          <!-- Gender -->
+          <div class="w-full space-y-2 md:col-span-3">
+            <p-floatlabel class="w-full">
+              <p-select
+                inputId="gender"
+                name="gender"
+                [options]="genderOptions"
+                optionLabel="label"
+                optionValue="value"
+                [(ngModel)]="PatientRegister.gender"
+                fluid
+                required
+                class="w-full"
+                #gender="ngModel"
+              />
+              <label for="gender" class="text-gray-600">Gender</label>
+            </p-floatlabel>
+          </div>
+
+          <!-- Blood Group -->
+          <div class="w-full space-y-2 md:col-span-3">
+            <p-floatlabel class="w-full">
+              <p-select
+                inputId="bloodGroup"
+                name="bloodGroup"
+                [options]="bloodGroupOptions"
+                optionLabel="label"
+                optionValue="value"
+                [(ngModel)]="PatientRegister.bloodGroup"
+                fluid
+                required
+                #bloodGroup="ngModel"
+                class="w-full"
+              />
+              <label for="bloodGroup" class="text-gray-600">Blood Group</label>
+            </p-floatlabel>
+          </div>
+
+          <!-- Height -->
+          <div class="w-full space-y-2 md:col-span-3">
+            <p-floatlabel class="w-full">
+              <input
+                type="number"
+                pInputText
+                name="height"
+                [(ngModel)]="PatientRegister.height"
+                min="1"
+                required
+                class="w-full"
+                #height="ngModel"
+              />
+
+              <label for="height" class="text-gray-600">Height (cm)</label>
+            </p-floatlabel>
+          </div>
+
+          <!-- Weight -->
+          <div class="w-full space-y-2 md:col-span-3">
+            <p-floatLabel class="w-full">
+              <input
+                type="number"
+                pInputText
+                name="weight"
+                [(ngModel)]="PatientRegister.weight"
+                min="1"
+                required
+                class="w-full"
+                #weight="ngModel"
+              />
+              <label for="weight" class="text-gray-600">Weight (kg)</label>
+            </p-floatLabel>
+          </div>
+
+          <!-- Address -->
+          <div class="md:col-span-6 space-y-2">
+            <p-floatLabel class="w-full">
+              <textarea
+                pTextarea
+                name="address"
+                [(ngModel)]="PatientRegister.address"
+                rows="3"
+                [autoResize]="true"
+                class="w-full"
+                #address="ngModel"
+              ></textarea>
+              <label for="address" class="text-gray-600">Address</label>
+            </p-floatLabel>
+          </div>
+
+          <div class="md:col-span-6">
+            <p-message severity="secondary" class=""
+              >Below will be used as your login credentials</p-message
+            >
+          </div>
+
+          <!-- Email -->
+          <div class="w-full space-y-2 md:col-span-6">
+            <p-floatLabel class="w-full">
+              <input
+                pInputText
+                name="email"
+                [(ngModel)]="PatientRegister.email"
+                email
+                required
+                #email="ngModel"
+                class="w-full"
+              />
+              <label for="email" class="text-gray-600">Email</label>
+            </p-floatLabel>
+            <p-message
+              *ngIf="
+                (formSubmitted() || email.touched) &&
+                email.invalid &&
+                email.hasError('required')
+              "
+              severity="error"
+              text="Email is required"
+              [life]="3000"
+              [closable]="true"
+              icon="pi pi-ban"
+              size="small"
+              variant="outlined"
+            ></p-message>
+            <p-message
+              *ngIf="
+                (formSubmitted() || email.touched) &&
+                email.invalid &&
+                email.hasError('email')
+              "
+              severity="error"
+              text="Enter a valid email"
+              [closable]="true"
+              icon="pi pi-ban"
+              size="small"
+              variant="outlined"
+            ></p-message>
+          </div>
+
+          <!-- Password -->
+          <div class="md:col-span-6 space-y-2">
+            <p-floatLabel class="w-full">
+              <p-password
+                name="password"
+                [(ngModel)]="PatientRegister.password"
+                minlength="6"
+                fluid
+                required
+                toggleMask="true"
+                class="w-full"
+              />
+              <label for="password" class="text-gray-600">Password</label>
+            </p-floatLabel>
+          </div>
+
+          <div class="md:col-span-6">
+            <p-checkbox
+              inputId="check"
+              binary="true"
+              name="check"
+              [(ngModel)]="agreedToTerms"
+              required
+              #check="ngModel"
+            />
+            <label for="check" class="text-gray-400 text-sm">
+              Agree to the terms and conditions
+            </label>
+
+            <p-message
+              *ngIf="formSubmitted() && !agreedToTerms()"
+              severity="error"
+              text="You must agree to the terms and conditions"
+              [closable]="true"
+              icon="pi pi-ban"
+              [life]="3000"
+              size="small"
+              variant="outlined"
+            />
+          </div>
+
+          <!-- Submit -->
+          <div class="md:col-span-6 flex justify-center sm:justify-end mt-6">
+            <p-button
+              type="submit"
+              label="Submit"
+              styleClass="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-0 font-semibold text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

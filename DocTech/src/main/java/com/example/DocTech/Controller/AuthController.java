@@ -1,28 +1,15 @@
 package com.example.DocTech.Controller;
 
-
-import com.example.DocTech.Model.Doctor;
 import com.example.DocTech.Model.LoginRequest;
 import com.example.DocTech.Model.LoginResponse;
-import com.example.DocTech.Repository.DoctorRepository;
 import com.example.DocTech.Service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.webauthn.api.AuthenticatorResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
-import java.util.Base64;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")

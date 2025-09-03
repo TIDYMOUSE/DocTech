@@ -1,0 +1,306 @@
+<p-toast></p-toast>
+<div class="min-h-screen bg-gray-50">
+  @if(!docStore.isLoadingDoc()){ @let doctor = docStore.doc()!;
+  <!-- Header Section with Teal Background -->
+  <div class="bg-teal-600 h-32 w-full relative">
+    <div
+      class="absolute"
+      [ngClass]="docStore.doc()!.image ? 'top-14 left-12' : 'top-24 left-14'"
+    >
+      @if (doctor.image) {
+      <img
+        [src]="getImageSrc()"
+        class="object-cover size-38 rounded-full border-4 border-white bg-zinc-50"
+        alt=""
+      />
+      } @else {
+      <p-avatar
+        [label]="getInitials()"
+        size="xlarge"
+        shape="circle"
+        class="border-4 border-black shadow-lg"
+        styleClass="text-2xl bg-gray-700 text-white"
+      >
+      </p-avatar>
+      }
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div
+    class="px-8 max-w-7xl mx-auto"
+    [ngClass]="doctor.image ? 'pt-28' : 'pt-10'"
+  >
+    <!-- Profile Header -->
+    <div class="flex justify-between items-start mb-8">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <h1 class="text-3xl font-bold text-gray-900">
+            {{ doctor.firstName }} {{ doctor.lastName }}
+          </h1>
+        </div>
+        <p class="text-gray-600 text-lg">
+          {{ doctor.specialisation }} at MedCenter Hospital
+        </p>
+
+        <!-- Rating -->
+        <div class="flex items-center gap-2 mt-2">
+          <p-rating [(ngModel)]="doctor.rating" [readonly]="true" [stars]="5">
+          </p-rating>
+          <span class="text-gray-600">({{ doctor.rating }})</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <p-button
+          icon="pi pi-arrow-up"
+          label="Follow"
+          severity="secondary"
+          class="mr-2"
+        >
+        </p-button>
+        <p-button icon="pi pi-comment" severity="secondary"> </p-button>
+        <p-button icon="pi pi-heart" severity="secondary"> </p-button>
+        <p-button icon="pi pi-ellipsis-h" severity="secondary"> </p-button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <p-tabs [(value)]="value">
+      <p-tablist>
+        <p-tab [value]="0">Overview</p-tab>
+        <p-tab [value]="1">Wards</p-tab>
+        <p-tab [value]="2">Patients</p-tab>
+        <p-tab [value]="3">Monitor</p-tab>
+        <p-tab [value]="4">Followups</p-tab>
+        <p-tab [value]="5">Complains</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel [value]="0">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column - Profile Info -->
+            <div class="lg:col-span-2 space-y-6">
+              <!-- About Section -->
+              <p-card>
+                <p class="text-gray-700 leading-relaxed">
+                  I have about 18+ years of experience in medical practice and
+                  patient care specializing in {{ doctor.specialisation }}. Most
+                  of my expertise involves advanced cardiac procedures, patient
+                  consultation, and emergency medical care. I am committed to
+                  providing exceptional healthcare services.
+                </p>
+                <p-button
+                  label="Show more"
+                  text="true"
+                  class="mt-3 p-0 text-teal-600"
+                >
+                </p-button>
+              </p-card>
+
+              <!-- Profile Insights -->
+              <p-card>
+                <h3 class="text-lg font-semibold mb-4">Profile insights</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <!-- Perfect Presence -->
+                  <div
+                    class="border border-green-200 rounded-lg p-4 bg-green-50"
+                  >
+                    <div class="flex items-center gap-2 mb-2">
+                      <i class="pi pi-check-circle text-green-600"></i>
+                      <span class="font-semibold text-green-800"
+                        >Perfect Presence</span
+                      >
+                    </div>
+                    <p class="text-sm text-green-700">
+                      Doctor is prompt and highly responsive.
+                    </p>
+                  </div>
+
+                  <!-- Top Achiever -->
+                  <div class="border border-red-200 rounded-lg p-4 bg-red-50">
+                    <div class="flex items-center gap-2 mb-2">
+                      <i class="pi pi-trophy text-red-600"></i>
+                      <span class="font-semibold text-red-800"
+                        >Top achiever: {{ doctor.specialisation }}</span
+                      >
+                    </div>
+                    <p class="text-sm text-red-700">
+                      Doctor is amongst the top 10% of contributors in their
+                      field of expertise!
+                    </p>
+                  </div>
+                </div>
+              </p-card>
+
+              <!-- Experience -->
+              <p-card>
+                <h3 class="text-lg font-semibold mb-4">Experience</h3>
+
+                <div class="mb-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-600">Expertise</span>
+                    <p-tag
+                      [value]="doctor.specialisation"
+                      severity="warning"
+                      class="text-sm"
+                    ></p-tag>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-600">Industries</span>
+                    <div class="flex gap-2">
+                      <p-tag
+                        value="Healthcare"
+                        severity="info"
+                        class="text-sm"
+                      ></p-tag>
+                      <p-tag
+                        value="Medical"
+                        severity="info"
+                        class="text-sm"
+                      ></p-tag>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-600">License</span>
+                    <span class="text-gray-900">{{
+                      doctor.licenseNumber
+                    }}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-600">Join Date</span>
+                    <span class="text-gray-900">{{
+                      formatDate(doctor.joinDate)
+                    }}</span>
+                  </div>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Right Column - Statistics & Sessions -->
+            <div class="space-y-6">
+              <!-- Community Statistics -->
+              <p-card>
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="text-lg font-semibold">Practice statistics</h3>
+                  <p-button
+                    label="See more"
+                    text="true"
+                    size="small"
+                    class="text-teal-600"
+                  >
+                  </p-button>
+                </div>
+
+                <div class="space-y-4">
+                  <div class="flex items-center gap-3">
+                    <div class="bg-blue-100 p-2 rounded-full">
+                      <i class="pi pi-clock text-blue-600"></i>
+                    </div>
+                    <div>
+                      <div class="font-semibold text-gray-900">1,350 mins</div>
+                      <div class="text-sm text-gray-600">
+                        Total consultation time
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <div class="bg-pink-100 p-2 rounded-full">
+                      <i class="pi pi-users text-pink-600"></i>
+                    </div>
+                    <div>
+                      <div class="font-semibold text-gray-900">34</div>
+                      <div class="text-sm text-gray-600">Patients treated</div>
+                    </div>
+                  </div>
+                </div>
+              </p-card>
+
+              <!-- Available Sessions -->
+              <p-card>
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="text-lg font-semibold">Available sessions</h3>
+                  <p-button
+                    label="View all"
+                    text="true"
+                    size="small"
+                    class="text-teal-600"
+                  >
+                  </p-button>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">
+                  In your local timezone (Asia/Bangkok) Update
+                </p>
+
+                <!-- Date Selector -->
+                <div class="flex gap-2 mb-4 overflow-x-auto">
+                  <div
+                    *ngFor="let date of availableDates; let i = index"
+                    [class]="i === 0 ? 'bg-teal-600 text-white' : 'bg-gray-100'"
+                    class="flex-shrink-0 text-center p-3 rounded-lg cursor-pointer min-w-[80px]"
+                  >
+                    <div class="text-sm font-medium">{{ date.day }}</div>
+                    <div class="text-xs">{{ date.slots }} slots</div>
+                  </div>
+                </div>
+
+                <!-- Available Time Slots -->
+                <div class="mb-4">
+                  <h4 class="font-medium mb-2">Available time slots</h4>
+                  <div class="flex gap-2">
+                    <p-tag value="8:00 PM" class="cursor-pointer"></p-tag>
+                    <p-tag value="9:00 PM" class="cursor-pointer"></p-tag>
+                  </div>
+                </div>
+
+                <!-- Book Session Button -->
+                <p-button
+                  label="Book Session for 02 May 2025"
+                  class="w-full"
+                  severity="info"
+                >
+                </p-button>
+              </p-card>
+            </div>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel [value]="1">
+          <app-wardlist />
+        </p-tabpanel>
+
+        <p-tabpanel [value]="2">
+          <app-pat-list />
+        </p-tabpanel>
+
+        <p-tabpanel [value]="3">
+          <app-monitor />
+        </p-tabpanel>
+
+        <p-tabpanel [value]="4"> <app-followup-list /> </p-tabpanel>
+        <p-tabpanel [value]="5">
+          <app-complain-list />
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+  }
+
+  <!-- ✅ Loading state -->
+  @if(docStore.isLoadingDoc()){
+  <div class="flex justify-center items-center min-h-screen">
+    <div class="text-center">
+      <p-progressSpinner></p-progressSpinner>
+      <p class="mt-4 text-gray-600">Loading doctor profile...</p>
+    </div>
+  </div>
+  }
+</div>

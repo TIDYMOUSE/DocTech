@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Complaint {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -33,6 +32,5 @@ public class Complaint {
     @ManyToOne
     @JoinColumn(name = "registration_id", referencedColumnName = "registration_id")
     private Patient_Register patientRegister;
-
 
 }
